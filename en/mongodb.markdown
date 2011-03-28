@@ -189,7 +189,7 @@ If this was real code, you'd probably update your records by `_id`, but since I 
 
 	db.unicorns.find({name: 'Roooooodles'})
 
-You should discover `updates` first surprise. No document is found because the second parameter we supply is used to **replace** the original. In other words, the `update` found a document by `name` and replaced the entire document with the new document (the 2nd parameter). This is different than how SQL's `update` command works. Therefore, to update one or few fields we would have to re-specify the entire document. Fortunately MongoDB provides an alternative via the `$set` modifier:
+You should discover `updates` first surprise. No document is found because the second parameter we supply is used to **replace** the original. In other words, the `update` found a document by `name` and replaced the entire document with the new document (the 2nd parameter). This is different than how SQL's `update` command works. In some situations, this is ideal and can be leveraged for some truly dynamic updates. However, when all you want to do is change the value of one, or a few fields, you are best to use MongoDB's `$set` modifier:
 
 	db.unicorns.update({weight: 590}, {$set: {name: 'Roooooodles', dob: new Date(1979, 7, 18, 18, 44), loves: ['apple'], gender: 'm', vampires: 99}})
 
@@ -197,7 +197,7 @@ This'll reset the lost fields. It won't overwrite the new `weight` since we didn
 
 	db.unicorns.find({name: 'Roooooodles'})
 
-We get the expected result. Therefor, the correct way to have updated the weight in the first place is:
+We get the expected result. Therefore, the correct way to have updated the weight in the first place is:
 
 	db.unicorns.update({name: 'Roooooodles'}, {$set: {weight: 590}})
 
@@ -206,7 +206,7 @@ In addition to `$set`, we can leverage other modifiers to do some nifty things. 
 
 	db.unicorns.update({name: 'Pilot'}, {$inc: {vampires: -2}})
 
-If Aurora suddenly developed a sweet tooth, we could add a value her `loves` field via the `$push` modifier:
+If Aurora suddenly developed a sweet tooth, we could add a value to her `loves` field via the `$push` modifier:
 
 	db.unicorns.update({name: 'Aurora'}, {$push: {loves: 'sugar'}})
 
