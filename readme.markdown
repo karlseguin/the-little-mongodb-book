@@ -14,7 +14,6 @@ The book is written in [markdown](http://daringfireball.net/projects/markdown/) 
 The LaTex template makes use of [Lena Herrmann's JavaScript highlighter](http://lenaherrmann.net/2010/05/20/javascript-syntax-highlighting-in-the-latex-listings-package).
 
 ## Generating the PDF ##
-
 I use a variation of <https://github.com/claes/pandoc-templates> to generate the pdf:
 
 	#!/bin/sh
@@ -39,3 +38,6 @@ I use a variation of <https://github.com/claes/pandoc-templates> to generate the
 	-V geometry=$geometry -V alignment=$alignment -V columns=$columns \
 	-V fontsize=$fontsize -V nohyphenation=$nohyphenation \
 	-V toc=$toc --listings en/mongodb.markdown -o mongodb.pdf 
+
+## Title Image ##
+A PSD of the title image is included. The font used is [Comfortaa](http://www.dafont.com/comfortaa.font).
