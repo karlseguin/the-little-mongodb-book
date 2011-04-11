@@ -13,6 +13,8 @@ The book is written in [markdown](http://daringfireball.net/projects/markdown/) 
 
 The LaTex template makes use of [Lena Herrmann's JavaScript highlighter](http://lenaherrmann.net/2010/05/20/javascript-syntax-highlighting-in-the-latex-listings-package).
 
+Kindle and ePub format provided using [PanDoc](http://johnmacfarlane.net/pandoc/). Run make en/mongodb.mobi to generate.
+
 ## Generating the PDF ##
 I use a variation of <https://github.com/claes/pandoc-templates> to generate the pdf:
 
