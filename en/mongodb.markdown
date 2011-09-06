@@ -310,7 +310,7 @@ Now let's add a couple employees and set their manager as `Leto`:
 	db.employees.insert({_id: ObjectId("4d85c7039ab0fd70a117d732"), name: 'Moneo', manager: ObjectId("4d85c7039ab0fd70a117d730")});
 
 
-(It's worth repeating that the `_id` can be any any unique value. Since you'd likely use an `ObjectId` in real life, we'll use them here as well.)
+(It's worth repeating that the `_id` can be any unique value. Since you'd likely use an `ObjectId` in real life, we'll use them here as well.)
 
 Of course, to find all of Leto's employees, one simply executes:
 
