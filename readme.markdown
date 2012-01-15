@@ -37,9 +37,8 @@ I use a variation of <https://github.com/claes/pandoc-templates> to generate the
 	markdown2pdf --xetex --template=template/xetex.template \
 	-V paper=$paper -V hmargin=$hmargin -V vmargin=$vmargin \
 	-V mainfont="$mainfont" -V sansfont="$sansfont" -V monofont="$monofont" \
-	-V geometry=$geometry -V alignment=$alignment -V columns=$columns \
-	-V fontsize=$fontsize -V nohyphenation=$nohyphenation \
-	-V toc=$toc --listings en/mongodb.markdown -o mongodb.pdf 
+	-V geometry=$geometry -V columns=$columns -V fontsize=$fontsize \
+	-V nohyphenation=$nohyphenation --listings en/mongodb.markdown -o mongodb.pdf 
 
 ## Title Image ##
 A PSD of the title image is included. The font used is [Comfortaa](http://www.dafont.com/comfortaa.font).
