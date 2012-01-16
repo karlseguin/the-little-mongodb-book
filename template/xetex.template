@@ -1,15 +1,11 @@
 \documentclass{book}
 \usepackage{fullpage}
 \usepackage{changepage}
-
-
-\ifxetex
-  \usepackage{fontspec,xltxtra,xunicode}
-  \setmainfont{$mainfont$}
-  \setsansfont{$sansfont$}
-  \setmonofont{$monofont$}
-  \defaultfontfeatures{Mapping=tex-text,Scale=MatchLowercase}
-\fi
+\usepackage{fontspec,xltxtra,xunicode}
+\setmainfont{$mainfont$}
+\setsansfont{$sansfont$}
+\setmonofont{$monofont$}
+\defaultfontfeatures{Mapping=tex-text,Scale=MatchLowercase}
 
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{12pt plus 2pt minus 1pt}
