@@ -27,8 +27,6 @@ I use a variation of <https://github.com/claes/pandoc-templates> to generate the
 	mainfont=Verdana
 	sansfont=Tahoma
 	monofont="Courier New"
-	language=english
-	nohyphenation=false
 	columns=onecolumn
 	geometry=portrait
 	nohyphenation=true
