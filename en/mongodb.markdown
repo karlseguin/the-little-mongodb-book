@@ -227,7 +227,7 @@ However, if we enable upserts, the results are quite different:
 	db.hits.update({page: 'unicorns'}, {$inc: {hits: 1}}, true);
 	db.hits.find();
 
-Since no documents exists with a field `page` equal to `unicorns`, a new document is inserted. If we execute it a second time,the existing document is updated and `hits` is incremented to 2.
+Since no documents exists with a field `page` equal to `unicorns`, a new document is inserted. If we execute it a second time, the existing document is updated and `hits` is incremented to 2.
 
 	db.hits.update({page: 'unicorns'}, {$inc: {hits: 1}}, true);
 	db.hits.find();
@@ -246,7 +246,7 @@ You'd likely expect to find all of your precious unicorns to be vaccinated. To g
 ### In This Chapter ###
 This chapter concluded our introduction to the basic CRUD operations available against a collection. We looked at `update` in detail and observed three interesting behaviors. First, unlike an SQL update, MongoDB's `update` replaces the actual document. Because of this the `$set` modifier is quite useful. Secondly, `update` supports an intuitive `upsert` which is particularly useful when paired with the `$inc` modifier. Finally, by default, `update` only updates the first found document.
 
-Do remember that we are looking at MongoDB from the point of view of its shell. The driver and library you use could alter these default behaviors or expose a different API. For example, the Ruby driver merges the last two parameters into a single hash: `{:upsert => false, :multi => false}`.
+Do remember that we are looking at MongoDB from the point of view of its shell. The driver and library you use could alter these default behaviors or expose a different API. For example, the Ruby driver merges the last two parameters into a single hash: `{:upsert => false, :multi => false}`. Similar situation with the PHP driver, where update command accepts the third parameter as array: `array('upsert' => false, 'multiple' => false, '...')`. 
 
 \clearpage
 
@@ -604,6 +604,7 @@ In this last chapter, we look at a few performance topics as well as some of the
 ### Indexes ###
 At the very beginning we saw the special `system.indexes` collection which contains information on all the indexes in our database. Indexes in MongoDB work a lot like indexes in a relational database: they help improve query and sorting performance. Indexes are created via `ensureIndex`:
 
+	// where "name" is the fieldname
 	db.unicorns.ensureIndex({name: 1});
 
 And dropped via `dropIndex`:
