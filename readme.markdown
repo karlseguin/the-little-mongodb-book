@@ -7,6 +7,14 @@ The book was written by [Karl Seguin](http://openmymind.net), with [Perry Neal](
 
 If you liked this book, maybe you'll also like [The Little Redis Book](http://openmymind.net/2012/1/23/The-Little-Redis-Book/).
 
+## Translations ##
+
+* [Russian](https://github.com/jsmarkus/the-little-mongodb-book/tree/master/ru)
+* [Chinese](https://github.com/justinyhuang/the-little-mongodb-book-cn)
+* [Italian](https://github.com/nicolaiarocci/the-little-mongodb-book/tree/master/it)
+* [Spanish](https://github.com/uokesita/the-little-mongodb-book/tree/master/es)
+* [Brazilian Portuguese](https://github.com/rafaelgou/the-little-mongodb-book/tree/master/pt_BR)
+
 ## License ##
 The book is freely distributed under the  [Attribution-NonCommercial 3.0 Unported license](<http://creativecommons.org/licenses/by-nc/3.0/legalcode>).
 
