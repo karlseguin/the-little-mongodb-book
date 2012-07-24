@@ -1,10 +1,3 @@
-\thispagestyle{empty}
-\changepage{}{}{}{-1.5cm}{}{2cm}{}{}{}
-![The Little MongoDB Book, By Karl Seguin](title.png)\
-
-\clearpage
-\changepage{}{}{}{1.5cm}{}{-2cm}{}{}{}
-
 ## About This Book ##
 
 ### License ###
@@ -30,8 +23,6 @@ A special thanks to [Perry Neal](http://twitter.com/perryneal) for lending me hi
 The latest source of this book is available at:
 
 <http://github.com/karlseguin/the-little-mongodb-book>.
-
-\clearpage
 
 ## Introduction ##
  > It's not my fault the chapters are short, MongoDB is just easy to learn.
@@ -74,8 +65,6 @@ Feel free to add the `bin` folder to your path to make all of this less verbose.
 Hopefully you now have MonogDB up and running. If you get an error, read the output carefully - the server is quite good at explaining what's wrong.
 
 You can now launch `mongo` (without the *d*) which will connect a shell to your running server. Try entering `db.version()` to make sure everything's working as it should. Hopefully you'll see the version number you installed.
-
-\clearpage
 
 ## Chapter 1 - The Basics ##
 We begin our journey by getting to know the basic mechanics of working with MongoDB. Obviously this is core to understanding MongoDB, but it should also help us answer higher-level questions about where MongoDB fits.
@@ -175,8 +164,6 @@ The `ObjectId` which MongoDB generated for our `_id` field can be selected like 
 ### In This Chapter ###
 We haven't looked at the `update` command yet, or some of the fancier things we can do with `find`. However, we did get MongoDB up and running, looked briefly at the `insert` and `remove` commands (there isn't much more than what we've seen). We also introduced `find` and saw what MongoDB `selectors` were all about. We've had a good start and laid a solid foundation for things to come. Believe it or not, you actually know most of what there is to know about MongoDB - it really is meant to be quick to learn and easy to use. I strongly urge you to play with your local copy before moving on. Insert different documents, possibly in new collections, and get familiar with different selectors. Use `find`, `count` and `remove`. After a few tries on your own, things that might have seemed awkward at first will hopefully fall into place.
 
-\clearpage
-
 ## Chapter 2 - Updating ##
 In chapter 1 we introduced three of the four CRUD (create, read, update and delete) operations. This chapter is dedicated to the one we skipped over: `update`. `Update` has a few surprising behaviors, which is why we dedicate a chapter to it.
 
@@ -247,8 +234,6 @@ You'd likely expect to find all of your precious unicorns to be vaccinated. To g
 This chapter concluded our introduction to the basic CRUD operations available against a collection. We looked at `update` in detail and observed three interesting behaviors. First, unlike an SQL update, MongoDB's `update` replaces the actual document. Because of this the `$set` modifier is quite useful. Secondly, `update` supports an intuitive `upsert` which is particularly useful when paired with the `$inc` modifier. Finally, by default, `update` only updates the first found document.
 
 Do remember that we are looking at MongoDB from the point of view of its shell. The driver and library you use could alter these default behaviors or expose a different API. For example, the Ruby driver merges the last two parameters into a single hash: `{:upsert => false, :multi => false}`. Similarly, the PHP driver, merges the last two parameters into an array: `array('upsert' => false, 'multiple' => false)`.
-
-\clearpage
 
 ## Chapter 3 - Mastering Find ##
 Chapter 1 provided a superficial look at the `find` command. There's more to `find` than understanding `selectors` though. We already mentioned that the result from `find` is a `cursor`. We'll now look at exactly what this means in more detail.
@@ -371,8 +356,6 @@ There's no hard rule (well, aside from 16MB). Play with different approaches and
 ### In This Chapter ###
 Our goal in this chapter was to provide some helpful guidelines for modeling your data in MongoDB. A starting point if you will. Modeling in a document-oriented system is different, but not too different than a relational world. You have a bit more flexibility and one constraint, but for a new system, things tend to fit quite nicely. The only way you can go wrong is by not trying.
 
-\clearpage
-
 ## Chapter 5 - When To Use MongoDB ##
 By now you should have a good enough understanding of MongoDB to have a feel for where and how it might fit into your existing system. There are enough new and competing storage technologies that it's easy to get overwhelmed by all of the choices.
 
@@ -435,8 +418,6 @@ On the positive side, drivers exist for a great many languages, the protocol is 
 
 ### In This Chapter ###
 The message from this chapter is that MongoDB, in most cases, can replace a relational database. It's much simpler and straightforward; it's faster and generally imposes fewer restrictions on application developers. The lack of transactions can be a legitimate and serious concern. However, when people ask *where does MongoDB sit with respect to the new data storage landscape?* the answer is simple: **right in the middle**.
-
-\clearpage
 
 ## Chapter 6 - MapReduce ##
 MapReduce is an approach to data processing which has two significant benefits over more traditional solutions. The first, and main, reason it was developed is performance. In theory, MapReduce can be parallelized, allowing very large sets of data to be processed across many cores/CPUs/machines. As we just mentioned, this isn't something MongoDB is currently able to take advantage of. The second benefit of MapReduce is that you get to write real code to do your processing. Compared to what you'd be able to do with SQL, MapReduce code is infinitely richer and lets you push the envelope further before you need to use a more specialized solution.
@@ -596,8 +577,6 @@ The third parameter takes additional options, for example we could filter, sort 
 ### In This Chapter ###
 This is the first chapter where we covered something truly different. If it made you uncomfortable, remember that you can always use MongoDB's other [aggregation capabilities](http://www.mongodb.org/display/DOCS/Aggregation) for simpler scenarios. Ultimately though, MapReduce is one of MongoDB's most compelling features. The key to really understanding how to write your map and reduce functions is to visualize and understand the way your intermediary data will look coming out of `map` and heading into `reduce`.
 
-\clearpage
-
 ## Chapter 7 - Performance and Tools ##
 In this last chapter, we look at a few performance topics as well as some of the tools available to MongoDB developers. We won't dive deeply into either topic, but we will examine the most import aspects of each.
 
@@ -696,8 +675,6 @@ Note that `mongoexport` and `mongoimport` cannot always represent your data. Onl
 
 ### In This Chapter ###
 In this chapter we looked a various commands, tools and performance details of using MongoDB. We haven't touched on everything, but we've looked at the most common ones. Indexing in MongoDB is similar to indexing with relational databases, as are many of the tools. However, with MongoDB, many of these are to the point and simple to use.
-
-\clearpage
 
 ## Conclusion ##
 You should have enough information to start using MongoDB in a real project. There's more to MongoDB than what we've covered, but your next priority should be putting together what we've learned, and getting familiar with the driver you'll be using. The [MongoDB website](http://www.mongodb.com/) has a lot of useful information. The official [MongoDB user group](http://groups.google.com/group/mongodb-user) is a great place to ask questions.
