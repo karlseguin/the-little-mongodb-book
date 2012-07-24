@@ -7,15 +7,23 @@ PDF_BUILDER_FLAGS = \
 	--template ../template/pdf-template.tex \
 	--listings
 
+EPUB_BUILDER = pandoc
+EPUB_BUILDER_FLAGS = \
+	--epub-cover-image
+
+MOBI_BUILDER = kindlegen
+
 
 en/mongodb.pdf:
 	cd en && $(PDF_BUILDER) $(PDF_BUILDER_FLAGS) $(SOURCE_FILE_NAME) -o $(BOOK_FILE_NAME).pdf
 
-en/mongodb.epub:	en/title.txt en/mongodb.markdown
-	pandoc -o $@ $^
+en/mongodb.epub: en/title.png en/title.txt en/mongodb.markdown
+	$(EPUB_BUILDER) $(EPUB_BUILDER_FLAGS) $^ -o $@
 
-en/mongodb.mobi:	en/mongodb.epub
-	kindleGen $^
+en/mongodb.mobi: en/mongodb.epub
+	$(MOBI_BUILDER) $^
 
 clean:
-	rm -f en/mongodb.pdf
+	rm -f */$(BOOK_FILE_NAME).pdf
+	rm -f */$(BOOK_FILE_NAME).epub
+	rm -f */$(BOOK_FILE_NAME).mobi
