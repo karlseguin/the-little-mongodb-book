@@ -1,70 +1,105 @@
 \documentclass{book}
+
+
+% Fonts and typography
+
+%% Typography
+\usepackage[no-math]{fontspec}
+\defaultfontfeatures{Mapping = tex-text, Scale = MatchLowercase}
+
+%% Fonts
+\setmainfont{Linux Libertine}
+\setsansfont{Droid Sans}
+\setmonofont{Droid Sans Mono}
+
+%% Set Sans font in headings
+\usepackage{sectsty}
+\allsectionsfont{\sffamily}
+
+%% Set polyglossia language
+\usepackage{polyglossia}
+\setdefaultlanguage{english}
+
+
+% Page
+
+%% Use full page in book style
 \usepackage{fullpage}
-\usepackage{changepage}
-\usepackage{fontspec,xltxtra,xunicode}
-\setmainfont{$mainfont$}
-\setsansfont{$sansfont$}
-\setmonofont{$monofont$}
-\defaultfontfeatures{Mapping=tex-text,Scale=MatchLowercase}
 
-\setlength{\parindent}{0pt}
-\setlength{\parskip}{12pt plus 2pt minus 1pt}
-\linespread{1.2}
+%% Set line spacing
+\usepackage{setspace}
+\setstretch{1.2}
+
+%% Start sections from new page
+\let\stdsection\section
+\renewcommand\section{\newpage\stdsection}
 
 
-\usepackage{listings}
-\usepackage[dvipsnames,usenames]{color}
+% Colors
+
+\usepackage[usenames, dvipsnames]{xcolor}
 
 \definecolor{lightgray}{rgb}{.95,.95,.95}
 \definecolor{darkgray}{rgb}{.4,.4,.4}
 \definecolor{purple}{rgb}{0.65, 0.12, 0.82}
 
+
+% Listings
+
+\usepackage{listings}
+
 \lstdefinelanguage{JavaScript}{
-  keywords={typeof, new, true, false, catch, function, return, null, catch, switch, var, if, in, while, do, else, case, break},
-  keywordstyle=\color{blue}\bfseries,
-  ndkeywords={class, export, boolean, throw, implements, import, this},
-  ndkeywordstyle=\color{darkgray}\bfseries,
-  identifierstyle=\color{black},
-  sensitive=false,
-  comment=[l]{//},
-  morecomment=[s]{/*}{*/},
-  commentstyle=\color{purple}\ttfamily,
-  stringstyle=\color{red}\ttfamily,
-  morestring=[b]',
-  morestring=[b]"
+  keywords = {typeof, new, true, false, catch, function, return, null, catch, switch, var, if, in, while, do, else, case, break},
+  keywordstyle = \color{blue}\bfseries,
+  ndkeywords = {class, export, boolean, throw, implements, import, this},
+  ndkeywordstyle = \color{darkgray}\bfseries,
+  identifierstyle = \color{black},
+  sensitive = false,
+  comment = [l]{//},
+  morecomment = [s]{/*}{*/},
+  commentstyle = \color{purple}\ttfamily,
+  stringstyle = \color{red}\ttfamily,
+  morestring = [b]',
+  morestring = [b]"
 }
 
 \lstset{
-   language=JavaScript,
-   backgroundcolor=\color{lightgray},
-   extendedchars=true,
-   basicstyle=\normalsize\ttfamily,
-   showstringspaces=false,
-   showspaces=false,
-   tabsize=1,
-   breaklines=true,
-   showtabs=false
+  language = JavaScript,
+  backgroundcolor = \color{lightgray},
+  extendedchars = true,
+  basicstyle = \normalsize\ttfamily,
+  showstringspaces = false,
+  showspaces = false,
+  tabsize = 1,
+  breaklines = true,
+  showtabs = false
 }
 
-$if(fancy-enums)$
+
+% Links
+
+%% Hyperref
+\usepackage[colorlinks, breaklinks, bookmarks, xetex]{hyperref}
+
+\hypersetup {
+  linkcolor = YellowOrange,
+  citecolor = YellowOrange,
+  filecolor = YellowOrange,
+  urlcolor = YellowOrange
+}
+
+
+% Pandoc hacks
+
+%% Normal enumerates processing
 \usepackage{enumerate}
-$endif$
-\setcounter{secnumdepth}{-1} 
 
-\usepackage{hyperref}
-\hypersetup{
-    colorlinks=true,%
-    citecolor=YellowOrange,%
-    filecolor=YellowOrange,%
-    linkcolor=YellowOrange,%
-    urlcolor=YellowOrange
-}
+%% Disable section numbers
+\setcounter{secnumdepth}{0}
 
-\usepackage[compact]{titlesec}
-\titlespacing{\section}{0pt}{*0}{*-2}
-\titlespacing{\subsection}{0pt}{*0}{*-2}
-\titlespacing{\subsubsection}{0pt}{*1}{*-2}
 
 \begin{document}
-$body$
+
+  $body$
+
 \end{document}
