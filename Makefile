@@ -4,7 +4,7 @@ BOOK_FILE_NAME = mongodb
 PDF_BUILDER = pandoc
 PDF_BUILDER_FLAGS = \
 	--latex-engine xelatex \
-	--template ../template/pdf-template.tex \
+	--template ../common/pdf-template.tex \
 	--listings
 
 EPUB_BUILDER = pandoc
