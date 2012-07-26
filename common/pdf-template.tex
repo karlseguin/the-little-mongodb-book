@@ -42,9 +42,18 @@
 
 \usepackage[usenames, dvipsnames]{xcolor}
 
-\definecolor{lightgray}{rgb}{.95,.95,.95}
-\definecolor{darkgray}{rgb}{.4,.4,.4}
-\definecolor{purple}{rgb}{0.65, 0.12, 0.82}
+%% Tango color scheme
+\definecolor{SkyBlue}{HTML}{3465A4}
+\definecolor{DarkSkyBlue}{HTML}{204A87}
+
+\definecolor{Plum}{HTML}{75507B}
+
+\definecolor{ScarletRed}{HTML}{CC0000}
+
+\definecolor{Aluminium1}{HTML}{EEEEEC}
+\definecolor{Aluminium6}{HTML}{2e3436}
+
+\definecolor{Black}{HTML}{000000}
 
 
 % Listings
@@ -53,22 +62,22 @@
 
 \lstdefinelanguage{JavaScript}{
   keywords = {typeof, new, true, false, catch, function, return, null, catch, switch, var, if, in, while, do, else, case, break},
-  keywordstyle = \color{blue}\bfseries,
+  keywordstyle = \color{SkyBlue}\bfseries,
   ndkeywords = {class, export, boolean, throw, implements, import, this},
-  ndkeywordstyle = \color{darkgray}\bfseries,
-  identifierstyle = \color{black},
+  ndkeywordstyle = \color{Aluminium6}\bfseries,
+  identifierstyle = \color{Black},
   sensitive = false,
   comment = [l]{//},
   morecomment = [s]{/*}{*/},
-  commentstyle = \color{purple}\ttfamily,
-  stringstyle = \color{red}\ttfamily,
+  commentstyle = \color{Plum}\ttfamily,
+  stringstyle = \color{ScarletRed}\ttfamily,
   morestring = [b]',
   morestring = [b]"
 }
 
 \lstset{
   language = JavaScript,
-  backgroundcolor = \color{lightgray},
+  backgroundcolor = \color{Aluminium1},
   extendedchars = true,
   basicstyle = \normalsize\ttfamily,
   showstringspaces = false,
