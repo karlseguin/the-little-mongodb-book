@@ -17,37 +17,23 @@ If you liked this book, maybe you'll also like [The Little Redis Book](http://op
 * Japanese [Version 1](http://www.cuspy.org/diary/2012-04-17) - [Version 2](https://github.com/ma2/the-little-mongodb-book)
 
 ## License ##
-The book is freely distributed under the  [Attribution-NonCommercial 3.0 Unported license](<http://creativecommons.org/licenses/by-nc/3.0/legalcode>).
+The book is freely distributed under the [Attribution-NonCommercial 3.0 Unported license](<http://creativecommons.org/licenses/by-nc/3.0/legalcode>).
 
 ## Formats ##
-The book is written in [markdown](http://daringfireball.net/projects/markdown/) and converted to PDF using [PanDoc](http://johnmacfarlane.net/pandoc/). A few LaTex specific commands have been placed in the markdown file to help with pdf-generation (namely for the title page and to create page breaks between chapters).
+The book is written in [Markdown](http://daringfireball.net/projects/markdown/) and converted to PDF using [Pandoc](http://johnmacfarlane.net/pandoc/).
 
-The LaTex template makes use of [Lena Herrmann's JavaScript highlighter](http://lenaherrmann.net/2010/05/20/javascript-syntax-highlighting-in-the-latex-listings-package).
+The TeX template makes use of [Lena Herrmann's JavaScript highlighter](http://lenaherrmann.net/2010/05/20/javascript-syntax-highlighting-in-the-latex-listings-package).
 
-Kindle and ePub format provided using [PanDoc](http://johnmacfarlane.net/pandoc/). Run make en/mongodb.mobi to generate.
+Kindle and ePub format provided using [Pandoc](http://johnmacfarlane.net/pandoc/).
 
-## Generating the PDF ##
-I use a variation of <https://github.com/claes/pandoc-templates> to generate the pdf:
+## Generating books ##
+Run specific Make target to get specific format:
 
-	#!/bin/sh
-	paper=a4paper
-	hmargin=3cm
-	vmargin=3cm
-	fontsize=11pt
+* `make en/mongodb.pdf`
+* `make en/mongodb.epub`
+* `make en/mongodb.mobi`
 
-	mainfont=Verdana
-	sansfont=Tahoma
-	monofont="Courier New"
-	columns=onecolumn
-	geometry=portrait
-	nohyphenation=true
-
-
-	markdown2pdf --xetex --template=template/xetex.template \
-	-V paper=$paper -V hmargin=$hmargin -V vmargin=$vmargin \
-	-V mainfont="$mainfont" -V sansfont="$sansfont" -V monofont="$monofont" \
-	-V geometry=$geometry -V columns=$columns -V fontsize=$fontsize \
-	-V nohyphenation=$nohyphenation --listings en/mongodb.markdown -o mongodb.pdf 
+Pandoc uses TeX as a buffer tool to generate PDF files, so you need to have TeX installed (packages `texlive-bin`, `texlive-core`, `texlive-latexextra` would be enough).
 
 ## Title Image ##
 A PSD of the title image is included. The font used is [Comfortaa](http://www.dafont.com/comfortaa.font).
