@@ -347,7 +347,7 @@ First, you should know that an individual document is currently limited to 16 me
 That doesn't mean you should underestimate the power of embedded documents or write them off as something of minor utility. Having your data model map directly to your objects makes things a lot simpler and often does remove the need to join. This is especially true when you consider that MongoDB lets you query and index fields of an embedded document.
 
 ## Few or Many Collections ##
-Given that collections don't enforce any schema, it's entirely possible to build a system using a single collection with a mismatch of documents.  From what I've seen, most MongoDB systems are laid out similarly to what you'd find in a relational system. In other words, if it would be a table in a relational database, it'll likely be a collection in MongoDB (many-to-many join tables being an important exception).
+Given that collections don't enforce any schema, it's entirely possible to build a system using a single collection with a mishmash of documents.  From what I've seen, most MongoDB systems are laid out similarly to what you'd find in a relational system. In other words, if it would be a table in a relational database, it'll likely be a collection in MongoDB (many-to-many join tables being an important exception).
 
 The conversation gets even more interesting when you consider embedded documents. The example that frequently comes up is a blog. Should you have a `posts` collection and a `comments` collection, or should each `post` have an array of `comments` embedded within it? Setting aside the 16MB document size limit for the time being (all of *Hamlet* is less than 200KB, so just how popular is your blog?), most developers still prefer to separate things out. It's simply cleaner and more explicit.
 
@@ -368,7 +368,7 @@ Notice that I didn't call MongoDB a *replacement* for relational databases, but 
 ## Schema-less ##
 An oft-touted benefit of document-oriented database is that they are schema-less. This makes them much more flexible than traditional database tables. I agree that schema-less is a nice feature, but not for the main reason most people mention.
 
-People talk about schema-less as though you'll suddenly start storing a crazy mismatch of data. There are domains and data sets which can really be a pain to model using relational databases, but I see those as edge cases. Schema-less is cool, but most of your data is going to be highly structured. It's true that having an occasional mismatch can be handy, especially when you introduce new features, but in reality it's nothing a nullable column probably wouldn't solve just as well.
+People talk about schema-less as though you'll suddenly start storing a crazy mishmash of data. There are domains and data sets which can really be a pain to model using relational databases, but I see those as edge cases. Schema-less is cool, but most of your data is going to be highly structured. It's true that having an occasional mismatch can be handy, especially when you introduce new features, but in reality it's nothing a nullable column probably wouldn't solve just as well.
 
 For me, the real benefit of schema-less design is the lack of setup and the reduced friction with OOP. This is particularly true when you're working with a static language. I've worked with MongoDB in both C# and Ruby, and the difference is striking. Ruby's dynamism and its popular ActiveRecord implementations already reduce much of the object-relational impedance mismatch. That isn't to say MongoDB isn't a good match for Ruby, it really is. Rather, I think most Ruby developers would see MongoDB as an incremental improvement, whereas C# or Java developers would see a fundamental shift in how they interact with their data.
 
@@ -425,7 +425,7 @@ MapReduce is an approach to data processing which has two significant benefits o
 MapReduce is a pattern that has grown in popularity, and you can make use of it almost anywhere; C#, Ruby, Java, Python and so on all have implementations. I want to warn you that at first this'll seem very different and complicated. Don't get frustrated, take your time and play with it yourself. This is worth understanding whether you are using MongoDB or not.
 
 ## A Mix of Theory and Practice ##
-MapReduce is a two-step process. First you map, and then you reduce. The mapping step transforms the inputted documents and emits a key=>value pair (the key and/or value can be complex). The reduce gets a key and the array of values emitted for that key and produces the final result. We'll look at each step, and the output of each step.
+MapReduce is a two-step process. First you map, and then you reduce. The mapping step transforms the inputted documents and emits a key=>value pair (the key and/or value can be complex). Then, key/value pairs are grouped by key, such that values for the same key end up in an array. The reduce gets a key and this array of values emitted for that key, and produces the final result. We'll look at each step, and the output of each step.
 
 The example that we'll be using is to generate a report of the number of hits, per day, we get on a resource (say a webpage). This is the *hello world* of MapReduce. For our purposes, we'll rely on a `hits` collection with two fields: `resource` and `date`. Our desired output is a breakdown by `resource`, `year`, `month`, `day` and `count`.
 
@@ -452,7 +452,7 @@ We'd expect the following output:
 	index     2010   1       21    2
 	index     2010   1       22    1
 
-(The nice thing about this type of approach to analytics is that by storing the output, reports are fast to generate and data growth is controlled (per resource that we track, we'll add at most 1 document per day.)
+The nice thing about this type of approach to analytics is that by storing the output, reports are fast to generate and data growth is controlled (per resource that we track, we'll add at most 1 document per day.)
 
 For the time being, focus on understanding the concept. At the end of this chapter, sample data and code will be given for you to try on your own.
 
@@ -468,7 +468,7 @@ The first thing to do is look at the map function. The goal of map is to make it
 		emit(key, {count: 1});
 	}
 
-`this` refers to the current document being inspected. Hopefully what'll help make this clear for you is to see what the output of the mapping step is. Using our above data, the complete output would be:
+`this` refers to the current document being inspected. Hopefully what'll help make this clear for you is to see what the output of the mapping step is. Using our above data, the complete output would is below. The values from `emit` are grouped together, as arrays, by key:
 
 	{resource: 'index', year: 2010, month: 0, day: 20} => [{count: 1}, {count: 1}, {count:1}]
 	{resource: 'about', year: 2010, month: 0, day: 20} => [{count: 1}]
@@ -476,7 +476,7 @@ The first thing to do is look at the map function. The goal of map is to make it
 	{resource: 'index', year: 2010, month: 0, day: 21} => [{count: 1}, {count: 1}]
 	{resource: 'index', year: 2010, month: 0, day: 22} => [{count: 1}]
 
-Understanding this intermediary step is the key to understanding MapReduce. The values from emit are grouped together, as arrays, by key. .NET and Java developers can think of it as being of type `IDictionary<object, IList<object>>` (.NET) or `HashMap<Object, ArrayList>` (Java).
+Understanding this intermediary step is the key to understanding MapReduce. .NET and Java developers can think of it as being of type `IDictionary<object, IList<object>>` (.NET) or `HashMap<Object, ArrayList>` (Java).
 
 Let's change our map function in some contrived way:
 
@@ -515,20 +515,20 @@ Which would output:
 
 Technically, the output in MongoDB is:
 
-	_id: {resource: 'home', year: 2010, month: 0, day: 20}, value: {count: 3}
+	_id: {resource: 'index', year: 2010, month: 0, day: 20}, value: {count: 3}
 
 Hopefully you've noticed that this is the final result we were after.
 
 If you've really been paying attention, you might be asking yourself why we didn't simply use `sum = values.length`. This would seem like an efficient approach when you are essentially summing an array of 1s. The fact is that reduce isn't always called with a full and perfect set of intermediate data. For example, instead of being called with:
 
-	{resource: 'home', year: 2010, month: 0, day: 20} => [{count: 1}, {count: 1}, {count:1}]
+	{resource: 'index', year: 2010, month: 0, day: 20} => [{count: 1}, {count: 1}, {count:1}]
 
 Reduce could be called with:
 
-	{resource: 'home', year: 2010, month: 0, day: 20} => [{count: 1}, {count: 1}]
-	{resource: 'home', year: 2010, month: 0, day: 20} => [{count: 2}, {count: 1}]
+	{resource: 'index', year: 2010, month: 0, day: 20} => [{count: 1}, {count: 1}]
+	{resource: 'index', year: 2010, month: 0, day: 20} => [{count: 2}, {count: 1}]
 
-The final output is the same (3), the path taken is simply different. As such, reduce must always be idempotent. That is, calling reduce multiple times should generate the same result as calling it once.
+The final output is the same (3), the path taken is slightly different. As such, reduce must always be idempotent. That is, calling reduce multiple times should generate the same result as calling it once.
 
 We aren't going to cover it here but it's common to chain reduce methods when performing more complex analysis.
 
@@ -619,7 +619,7 @@ We previously mentioned that, by default, writes in MongoDB are fire-and-forget.
 Unfortunately, the shell automatically does safe inserts, so we can't easily see this behavior in action.
 
 ## Sharding ##
-MongoDB supports auto-sharding. Sharding is an approach to scalability which separates your data across multiple servers. A naive implementation might put all of the data for users with a name that starts with A-M on server 1 and the rest on server 2. Thankfully, MongoDB's sharding capabilities far exceed such a simple algorithm. Sharding is a topic well beyond the scope of this book, but you should know that it exists and that you should consider it should your needs grow beyond a single server.
+MongoDB supports auto-sharding. Sharding is an approach to scalability which separates your data across multiple servers. A naive implementation might put all of the data for users with a name that starts with A-M on server 1 and the rest on server 2. Thankfully, MongoDB's sharding capabilities far exceed such a simple algorithm. Sharding is a topic well beyond the scope of this book, but you should know that it exists and that you should consider it, should your needs grow beyond a single server.
 
 ## Replication ##
 MongoDB replication works similarly to how relational database replication works. Writes are sent to a single server, the master, which then synchronizes itself to one or more other servers, the slaves. You can control whether reads can happen on slaves or not, which can help distribute your load at the risk of reading slightly stale data. If the master goes down, a slave can be promoted to act as the new master. Again, MongoDB replication is outside the scope of this book.
