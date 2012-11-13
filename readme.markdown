@@ -27,13 +27,50 @@ The TeX template makes use of [Lena Herrmann's JavaScript highlighter](http://le
 Kindle and ePub format provided using [Pandoc](http://johnmacfarlane.net/pandoc/).
 
 ## Generating books ##
-Run specific Make target to get specific format:
+Packages listed below are for Ubuntu. If you use another OS or distribution names would be similar.
 
-* `make en/mongodb.pdf`
-* `make en/mongodb.epub`
-* `make en/mongodb.mobi`
+### PDF
 
-Pandoc uses TeX as a buffer tool to generate PDF files, so you need to have TeX installed (packages `texlive-bin`, `texlive-core`, `texlive-latexextra` would be enough).
+#### Dependencies
+
+Packages:
+
+* `pandoc`
+* `texlive-xetex`
+* `texlive-latex-extra`
+* `texlive-latex-recommended`
+
+You should have Microsoft fonts installed too. But you could change fonts in `common/pdf-template.tex` file if you want.
+
+#### Building
+
+Run `make en/mongodb.pdf`.
+
+### ePub
+
+#### Dependencies
+
+Packages:
+
+* `pandoc`
+
+#### Building
+
+Run `make en/mongodb.epub`.
+
+### Mobi
+
+#### Dependencies
+
+Packages:
+
+* `pandoc`
+
+You should have [KindleGen](http://www.amazon.com/gp/feature.html?ie=UTF8&docId=1000765211) installed too.
+
+#### Building
+
+Run `make en/mongodb.mobi`.
 
 ## Title Image ##
 A PSD of the title image is included. The font used is [Comfortaa](http://www.dafont.com/comfortaa.font).
