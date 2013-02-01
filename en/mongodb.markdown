@@ -517,16 +517,15 @@ Technically, the output in MongoDB is:
 
 Hopefully you've noticed that this is the final result we were after.
 
-If you've really been paying attention, you might be asking yourself why we didn't simply use `sum = values.length`. This would seem like an efficient approach when you are essentially summing an array of 1s. The fact is that reduce isn't always called with a full and perfect set of intermediate data. For example, instead of being called with:
+If you've really been paying attention, you might be asking yourself why we didn't simply use `sum = values.length`. This would seem like an efficient approach when you are essentially summing an array of 1s. This is not guaranteed. Reduce may be called multiple times with partially-reduced values, and must show [idempotence](http://en.wikipedia.org/wiki/Idempotence) across calls. It must equivalently return `{count: 3}` for both:
 
 	{resource: 'index', year: 2010, month: 0, day: 20} => [{count: 1}, {count: 1}, {count:1}]
 
-Reduce could be called with:
+and:
 
-	{resource: 'index', year: 2010, month: 0, day: 20} => [{count: 1}, {count: 1}]
 	{resource: 'index', year: 2010, month: 0, day: 20} => [{count: 2}, {count: 1}]
 
-The final output is the same (3), the path taken is slightly different. As such, reduce must always be idempotent. That is, calling reduce multiple times should generate the same result as calling it once.
+Using `sum = values.length` would incorrectly return `{count: 2}` from the second call.
 
 We aren't going to cover it here but it's common to chain reduce methods when performing more complex analysis.
 
