@@ -517,17 +517,24 @@ Technically, the output in MongoDB is:
 
 Hopefully you've noticed that this is the final result we were after.
 
-If you've really been paying attention, you might be asking yourself why we didn't simply use `sum = values.length`. This would seem like an efficient approach when you are essentially summing an array of 1s. This is not guaranteed. Reduce may be called multiple times with partially-reduced values, and must show [idempotence](http://en.wikipedia.org/wiki/Idempotence) across calls. It must equivalently return `{count: 3}` for both:
+If you've really been paying attention, you might be asking yourself why we didn't use `sum = values.length`. This would seem like an efficient approach when you are summing an array of 1s. This however, is not guaranteed to work. Reduce can be called multiple times with only a portion of the overall values. The purpose of this is to allow the reduce function to be distributed across threads, processes or even computers. The result of two or more reduce functions are fed back into the same reduce function (many times over, for a large data set).
+
+Going back to our example, reduce might be called once with the following input:
 
 	{resource: 'index', year: 2010, month: 0, day: 20} => [{count: 1}, {count: 1}, {count:1}]
 
-and:
+or it might be called twice with the output of *step 1* making up part of the input to *step 2*:
 
+	//STEP 1
+	{resource: 'index', year: 2010, month: 0, day: 20} => [{count: 1}, {count: 1}]
+	//STEP 2
 	{resource: 'index', year: 2010, month: 0, day: 20} => [{count: 2}, {count: 1}]
 
-Using `sum = values.length` would incorrectly return `{count: 2}` from the second call.
+Using `sum = values.length` would incorrectly return `{count: 2}` from the second step.
 
-We aren't going to cover it here but it's common to chain reduce methods when performing more complex analysis.
+This means that the structure of reduce's output must be the same as its imput, and calling reduce multiple times should result in the same result (known as idempotency).
+
+Finally, we aren't going to cover it here but it's common to chain reduce methods when performing more complex analysis.
 
 ## Pure Practical ##
 With MongoDB we use the `mapReduce` command on a collection. `mapReduce` takes a map function, a reduce function and an output directive. In our shell we can create and pass a JavaScript function. From most libraries you supply a string of your functions (which is a bit ugly). First though, let's create our simple data set:
