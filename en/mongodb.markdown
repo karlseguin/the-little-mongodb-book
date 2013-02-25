@@ -532,7 +532,7 @@ or it might be called twice with the output of *step 1* making up part of the in
 
 Using `sum = values.length` would incorrectly return `{count: 2}` from the second step.
 
-This means that the structure of reduce's output must be the same as its input, and calling reduce multiple times should result in the same result (known as idempotency).
+In general, the structure of reduce's output must be the same as its input, and calling reduce multiple times should produce the same result (known as idempotency).
 
 Finally, we aren't going to cover it here but it's common to chain reduce methods when performing more complex analysis.
 
