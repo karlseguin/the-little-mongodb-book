@@ -105,7 +105,7 @@ You can now use the `find` command against `unicorns` to return a list of docume
 
 	db.unicorns.find()
 
-Notice that, in addition to the data you specified, there's an `_id` field. Every document must have a unique `_id` field. You can either generate one yourself or let MongoDB generate an ObjectId for you. Most of the time you'll probably want to let MongoDB generate it for you. By default, the `_id` field is indexed - which explains why the `system.indexes` collection was created. You can look at `system.indexes`:
+Notice that, in addition to the data you specified, there's an `_id` field. Every document must have a unique `_id` field. You can either generate one yourself or let MongoDB generate an `ObjectId` for you. Most of the time you'll probably want to let MongoDB generate it for you. By default, the `_id` field is indexed - which explains why the `system.indexes` collection was created. You can look at `system.indexes`:
 
 	db.system.indexes.find()
 
@@ -325,7 +325,7 @@ In case you are wondering, embedded documents can be queried using a dot-notatio
 We'll briefly talk about where embedded documents fit and how you should use them.
 
 ## DBRef ##
-MongoDB supports something known as `DBRef` which is a convention many drivers support. When a driver encounters a `DBRef` it can automatically pull the referenced document. A `DBRef` includes the collection and id of the referenced document. It generally serves a pretty specific purpose: when documents from the same collection might reference documents from a different collection from each other. That is, the `DBRef` for document1 might point to a document in `managers` whereas the `DBRef` for document2 might point to a document in `employees`.
+MongoDB supports something known as `DBRef` which is a convention many drivers support. When a driver encounters a `DBRef` it can automatically pull the referenced document. A `DBRef` includes the collection and id of the referenced document. It generally serves a pretty specific purpose: when documents from the same collection might reference documents from a different collection from each other. That is, the `DBRef` for `document1` might point to a document in `managers` whereas the `DBRef` for `document2` might point to a document in `employees`.
 
 
 ## Denormalization ##
