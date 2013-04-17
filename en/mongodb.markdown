@@ -97,7 +97,8 @@ A small side note: Because this is a JavaScript shell, if you execute a method a
 
 First we'll use the global `use` method to switch databases, so go ahead and enter `use learn`. It doesn't matter that the database doesn't really exist yet. The first collection that we create will also create the actual `learn` database. Now that you are inside a database, you can start issuing database commands, like `db.getCollectionNames()`. If you do so, you should get an empty array (`[ ]`). Since collections are schema-less, we don't explicitly need to create them. We can simply insert a document into a new collection. To do so, use the `insert` command, supplying it with the document to insert:
 
-	db.unicorns.insert({name: 'Aurora', gender: 'f', weight: 450})
+	db.unicorns.insert({name: 'Aurora',
+		gender: 'f', weight: 450})
 
 The above line is executing `insert` against the `unicorns` collection, passing it a single argument. Internally MongoDB uses a binary serialized JSON format. Externally, this means that we use JSON a lot, as is the case with our parameters. If we execute `db.getCollectionNames()` now, we'll actually see two collections: `unicorns` and `system.indexes`. The collection `system.indexes` is created once per database and contains the information on our database's index.
 
@@ -105,7 +106,7 @@ You can now use the `find` command against `unicorns` to return a list of docume
 
 	db.unicorns.find()
 
-Notice that, in addition to the data you specified, there's an `_id` field. Every document must have a unique `_id` field. You can either generate one yourself or let MongoDB generate an ObjectId for you. Most of the time you'll probably want to let MongoDB generate it for you. By default, the `_id` field is indexed - which explains why the `system.indexes` collection was created. You can look at `system.indexes`:
+Notice that, in addition to the data you specified, there's an `_id` field. Every document must have a unique `_id` field. You can either generate one yourself or let MongoDB generate an `ObjectId` for you. Most of the time you'll probably want to let MongoDB generate it for you. By default, the `_id` field is indexed - which explains why the `system.indexes` collection was created. You can look at `system.indexes`:
 
 	db.system.indexes.find()
 
@@ -113,7 +114,10 @@ What you're seeing is the name of the index, the database and collection it was 
 
 Now, back to our discussion about schema-less collections. Insert a totally different document into `unicorns`, such as:
 
-	db.unicorns.insert({name: 'Leto', gender: 'm', home: 'Arrakeen', worm: false})
+	db.unicorns.insert({name: 'Leto',
+		gender: 'm',
+		home: 'Arrakeen',
+		worm: false})
 
 And, again use `find` to list the documents. Once we know a bit more, we'll discuss this interesting behavior of MongoDB, but hopefully you are starting to understand why the more traditional terminology wasn't a good fit.
 
@@ -122,32 +126,99 @@ In addition to the six concepts we've explored, there's one practical aspect of 
 
 Before delving too deeply into selectors, let's set up some data to play with. First, remove what we've put so far in the `unicorns` collection via: `db.unicorns.remove()` (since we aren't supplying a selector, it'll remove all documents). Now, issue the following inserts to get some data we can play with (I suggest you copy and paste this):
 
-	db.unicorns.insert({name: 'Horny', dob: new Date(1992,2,13,7,47), loves: ['carrot','papaya'], weight: 600, gender: 'm', vampires: 63});
-	db.unicorns.insert({name: 'Aurora', dob: new Date(1991, 0, 24, 13, 0), loves: ['carrot', 'grape'], weight: 450, gender: 'f', vampires: 43});
-	db.unicorns.insert({name: 'Unicrom', dob: new Date(1973, 1, 9, 22, 10), loves: ['energon', 'redbull'], weight: 984, gender: 'm', vampires: 182});
-	db.unicorns.insert({name: 'Roooooodles', dob: new Date(1979, 7, 18, 18, 44), loves: ['apple'], weight: 575, gender: 'm', vampires: 99});
-	db.unicorns.insert({name: 'Solnara', dob: new Date(1985, 6, 4, 2, 1), loves:['apple', 'carrot', 'chocolate'], weight:550, gender:'f', vampires:80});
-	db.unicorns.insert({name:'Ayna', dob: new Date(1998, 2, 7, 8, 30), loves: ['strawberry', 'lemon'], weight: 733, gender: 'f', vampires: 40});
-	db.unicorns.insert({name:'Kenny', dob: new Date(1997, 6, 1, 10, 42), loves: ['grape', 'lemon'], weight: 690,  gender: 'm', vampires: 39});
-	db.unicorns.insert({name: 'Raleigh', dob: new Date(2005, 4, 3, 0, 57), loves: ['apple', 'sugar'], weight: 421, gender: 'm', vampires: 2});
-	db.unicorns.insert({name: 'Leia', dob: new Date(2001, 9, 8, 14, 53), loves: ['apple', 'watermelon'], weight: 601, gender: 'f', vampires: 33});
-	db.unicorns.insert({name: 'Pilot', dob: new Date(1997, 2, 1, 5, 3), loves: ['apple', 'watermelon'], weight: 650, gender: 'm', vampires: 54});
-	db.unicorns.insert({name: 'Nimue', dob: new Date(1999, 11, 20, 16, 15), loves: ['grape', 'carrot'], weight: 540, gender: 'f'});
-	db.unicorns.insert({name: 'Dunx', dob: new Date(1976, 6, 18, 18, 18), loves: ['grape', 'watermelon'], weight: 704, gender: 'm', vampires: 165});
+	db.unicorns.insert({name: 'Horny',
+		dob: new Date(1992,2,13,7,47),
+		loves: ['carrot','papaya'],
+		weight: 600,
+		gender: 'm',
+		vampires: 63});
+	db.unicorns.insert({name: 'Aurora',
+		dob: new Date(1991, 0, 24, 13, 0),
+		loves: ['carrot', 'grape'],
+		weight: 450,
+		gender: 'f',
+		vampires: 43});
+	db.unicorns.insert({name: 'Unicrom',
+		dob: new Date(1973, 1, 9, 22, 10),
+		loves: ['energon', 'redbull'],
+		weight: 984,
+		gender: 'm',
+		vampires: 182});
+	db.unicorns.insert({name: 'Roooooodles',
+		dob: new Date(1979, 7, 18, 18, 44),
+		loves: ['apple'],
+		weight: 575,
+		gender: 'm',
+		vampires: 99});
+	db.unicorns.insert({name: 'Solnara',
+		dob: new Date(1985, 6, 4, 2, 1),
+		loves:['apple', 'carrot',
+			'chocolate'],
+		weight:550,
+		gender:'f',
+		vampires:80});
+		db.unicorns.insert({name:'Ayna',
+		dob: new Date(1998, 2, 7, 8, 30),
+		loves: ['strawberry', 'lemon'],
+		weight: 733,
+		gender: 'f',
+		vampires: 40});
+	db.unicorns.insert({name:'Kenny',
+		dob: new Date(1997, 6, 1, 10, 42),
+		loves: ['grape', 'lemon'],
+		weight: 690,
+		gender: 'm',
+		vampires: 39});
+	db.unicorns.insert({name: 'Raleigh',
+		dob: new Date(2005, 4, 3, 0, 57),
+		loves: ['apple', 'sugar'],
+		weight: 421,
+		gender: 'm',
+		vampires: 2});
+	db.unicorns.insert({name: 'Leia',
+		dob: new Date(2001, 9, 8, 14, 53),
+		loves: ['apple', 'watermelon'],
+		weight: 601,
+		gender: 'f',
+		vampires: 33});
+	db.unicorns.insert({name: 'Pilot',
+		dob: new Date(1997, 2, 1, 5, 3),
+		loves: ['apple', 'watermelon'],
+		weight: 650,
+		gender: 'm',
+		vampires: 54});
+	db.unicorns.insert({name: 'Nimue',
+		dob: new Date(1999, 11, 20, 16, 15),
+		loves: ['grape', 'carrot'],
+		weight: 540,
+		gender: 'f'});
+	db.unicorns.insert({name: 'Dunx',
+		dob: new Date(1976, 6, 18, 18, 18),
+		loves: ['grape', 'watermelon'],
+		weight: 704,
+		gender: 'm',
+		vampires: 165});
 
 Now that we have data, we can master selectors. `{field: value}` is used to find any documents where `field` is equal to `value`. `{field1: value1, field2: value2}` is how we do an `and` statement. The special `$lt`, `$lte`, `$gt`, `$gte` and `$ne` are used for less than, less than or equal, greater than, greater than or equal and not equal operations. For example, to get all male unicorns that weigh more than 700 pounds, we could do:
 
-	db.unicorns.find({gender: 'm', weight: {$gt: 700}})
-	//or (not quite the same thing, but for demonstration purposes)
-	db.unicorns.find({gender: {$ne: 'f'}, weight: {$gte: 701}})
+	db.unicorns.find({gender: 'm',
+		weight: {$gt: 700}})
+	//or (not quite the same thing, but for
+	//demonstration purposes)
+	db.unicorns.find({gender: {$ne: 'f'},
+		weight: {$gte: 701}})
 
 The `$exists` operator is used for matching the presence or absence of a field, for example:
 
-	db.unicorns.find({vampires: {$exists: false}})
+	db.unicorns.find({
+		vampires: {$exists: false}})
 
 Should return a single document. If we want to OR rather than AND we use the `$or` operator and assign it to an array of values we want or'd:
 
-	db.unicorns.find({gender: 'f', $or: [{loves: 'apple'}, {loves: 'orange'}, {weight: {$lt: 500}}]})
+	db.unicorns.find({gender: 'f',
+		$or: [{loves: 'apple'},
+			{loves: 'orange'},
+			{weight: {$lt: 500}}]})
 
 The above will return all female unicorns which either love apples or oranges or weigh less than 500 pounds.
 
@@ -159,7 +230,8 @@ We've seen how these selectors can be used with the `find` command. They can als
 
 The `ObjectId` which MongoDB generated for our `_id` field can be selected like so:
 
-	db.unicorns.find({_id: ObjectId("TheObjectId")})
+	db.unicorns.find(
+		{_id: ObjectId("TheObjectId")})
 
 ## In This Chapter ##
 We haven't looked at the `update` command yet, or some of the fancier things we can do with `find`. However, we did get MongoDB up and running, looked briefly at the `insert` and `remove` commands (there isn't much more than what we've seen). We also introduced `find` and saw what MongoDB `selectors` were all about. We've had a good start and laid a solid foundation for things to come. Believe it or not, you actually know most of what there is to know about MongoDB - it really is meant to be quick to learn and easy to use. I strongly urge you to play with your local copy before moving on. Insert different documents, possibly in new collections, and get familiar with different selectors. Use `find`, `count` and `remove`. After a few tries on your own, things that might have seemed awkward at first will hopefully fall into place.
@@ -170,7 +242,8 @@ In chapter 1 we introduced three of the four CRUD (create, read, update and dele
 ## Update: Replace Versus $set ##
 In its simplest form, `update` takes 2 arguments: the selector (where) to use and what field to update with. If Roooooodles had gained a bit of weight, we could execute:
 
-	db.unicorns.update({name: 'Roooooodles'}, {weight: 590})
+	db.unicorns.update({name: 'Roooooodles'},
+		{weight: 590})
 
 (If you've played with your `unicorns` collection and it doesn't have the original data anymore, go ahead and `remove` all documents and re-insert from the code in chapter 1.)
 
@@ -180,7 +253,12 @@ If this was real code, you'd probably update your records by `_id`, but since I 
 
 You should discover the first surprise of `update`. No document is found because the second parameter we supply is used to **replace** the original. In other words, the `update` found a document by `name` and replaced the entire document with the new document (the 2nd parameter). This is different than how SQL's `update` command works. In some situations, this is ideal and can be leveraged for some truly dynamic updates. However, when all you want to do is change the value of one, or a few fields, you are best to use MongoDB's `$set` modifier:
 
-	db.unicorns.update({weight: 590}, {$set: {name: 'Roooooodles', dob: new Date(1979, 7, 18, 18, 44), loves: ['apple'], gender: 'm', vampires: 99}})
+	db.unicorns.update({weight: 590}, {$set: {
+		name: 'Roooooodles',
+		dob: new Date(1979, 7, 18, 18, 44),
+		loves: ['apple'],
+		gender: 'm',
+		vampires: 99}})
 
 This'll reset the lost fields. It won't overwrite the new `weight` since we didn't specify it. Now if we execute:
 
@@ -188,16 +266,19 @@ This'll reset the lost fields. It won't overwrite the new `weight` since we didn
 
 We get the expected result. Therefore, the correct way to have updated the weight in the first place is:
 
-	db.unicorns.update({name: 'Roooooodles'}, {$set: {weight: 590}})
+	db.unicorns.update({name: 'Roooooodles'},
+		{$set: {weight: 590}})
 
 ## Update Modifiers ##
 In addition to `$set`, we can leverage other modifiers to do some nifty things. All of these update modifiers work on fields - so your entire document won't be wiped out. For example, the `$inc` modifier is used to increment a field by a certain positive or negative amount. For example, if Pilot was incorrectly awarded a couple vampire kills, we could correct the mistake by executing:
 
-	db.unicorns.update({name: 'Pilot'}, {$inc: {vampires: -2}})
+	db.unicorns.update({name: 'Pilot'},
+		{$inc: {vampires: -2}})
 
 If Aurora suddenly developed a sweet tooth, we could add a value to her `loves` field via the `$push` modifier:
 
-	db.unicorns.update({name: 'Aurora'}, {$push: {loves: 'sugar'}})
+	db.unicorns.update({name: 'Aurora'},
+		{$push: {loves: 'sugar'}})
 
 The [Updating](http://www.mongodb.org/display/DOCS/Updating) section of the MongoDB website has more information on the other available update modifiers.
 
@@ -206,28 +287,34 @@ One of the more pleasant surprises of using `update` is that it fully supports `
 
 A mundane example is a hit counter for a website. If we wanted to keep an aggregate count in real time, we'd have to see if the record already existed for the page, and based on that decide to run an update or insert. With the third parameter omitted (or set to false), executing the following won't do anything:
 
-	db.hits.update({page: 'unicorns'}, {$inc: {hits: 1}});
+	db.hits.update({page: 'unicorns'},
+		{$inc: {hits: 1}});
 	db.hits.find();
 
 However, if we enable upserts, the results are quite different:
 
-	db.hits.update({page: 'unicorns'}, {$inc: {hits: 1}}, true);
+	db.hits.update({page: 'unicorns'},
+		{$inc: {hits: 1}}, true);
 	db.hits.find();
 
 Since no documents exists with a field `page` equal to `unicorns`, a new document is inserted. If we execute it a second time, the existing document is updated and `hits` is incremented to 2.
 
-	db.hits.update({page: 'unicorns'}, {$inc: {hits: 1}}, true);
+	db.hits.update({page: 'unicorns'},
+		{$inc: {hits: 1}}, true);
 	db.hits.find();
 
 ## Multiple Updates ##
 The final surprise `update` has to offer is that, by default, it'll update a single document. So far, for the examples we've looked at, this might seem logical. However, if you executed something like:
 
-	db.unicorns.update({}, {$set: {vaccinated: true }});
+	db.unicorns.update({},
+		{$set: {vaccinated: true }});
 	db.unicorns.find({vaccinated: true});
 
 You'd expect to find all of your precious unicorns to be vaccinated. To get the behavior you desire, a fourth parameter must be set to true:
 
-	db.unicorns.update({}, {$set: {vaccinated: true }}, false, true);
+	db.unicorns.update({},
+		{$set: {vaccinated: true }},
+		false, true);
 	db.unicorns.find({vaccinated: true});
 
 ## In This Chapter ##
@@ -254,14 +341,18 @@ A few times now I've mentioned that `find` returns a cursor whose execution is d
 	db.unicorns.find().sort({weight: -1})
 
 	//by unicorn name then vampire kills:
-	db.unicorns.find().sort({name: 1, vampires: -1})
+	db.unicorns.find().sort({name: 1,
+		vampires: -1})
 
 As with a relational database, MongoDB can use an index for sorting. We'll look at indexes in more detail later on. However, you should know that MongoDB limits the size of your sort without an index. That is, if you try to sort a large result set which can't use an index, you'll get an error. Some people see this as a limitation. In truth, I wish more databases had the capability to refuse to run unoptimized queries. (I won't turn every MongoDB drawback into a positive, but I've seen enough poorly optimized databases that I sincerely wish they had a strict-mode.)
 
 ## Paging ##
 Paging results can be accomplished via the `limit` and `skip` cursor methods. To get the second and third heaviest unicorn, we could do:
 
-	db.unicorns.find().sort({weight: -1}).limit(2).skip(1)
+	db.unicorns.find()
+		.sort({weight: -1})
+		.limit(2)
+		.skip(1)
 
 Using `limit` in conjunction with `sort`, is a good way to avoid running into problems when sorting on non-indexed fields.
 
@@ -272,7 +363,8 @@ The shell makes it possible to execute a `count` directly on a collection, such 
 
 In reality, `count` is actually a `cursor` method, the shell simply provides a shortcut. Drivers which don't provide such a shortcut need to be executed like this (which will also work in the shell):
 
-	db.unicorns.find({vampires: {$gt: 50}}).count()
+	db.unicorns.find({vampires: {$gt: 50}})
+		.count()
 
 ## In This Chapter ##
 Using `find` and `cursors` is a straightforward proposition. There are a few additional commands that we'll either cover in later chapters or which only serve edge cases, but, by now, you should be getting pretty comfortable working in the mongo shell and understanding the fundamentals of MongoDB.
@@ -287,45 +379,70 @@ The first and most fundamental difference that you'll need to get comfortable wi
 
 Without knowing anything else, to live in a join-less world, we have to do joins ourselves within our application's code. Essentially we need to issue a second query to `find` the relevant data. Setting our data up isn't any different than declaring a foreign key in a relational database. Let's give a little less focus to our beautiful `unicorns` and a bit more time to our `employees`. The first thing we'll do is create an employee (I'm providing an explicit `_id` so that we can build coherent examples)
 
-	db.employees.insert({_id: ObjectId("4d85c7039ab0fd70a117d730"), name: 'Leto'})
+	db.employees.insert({_id: ObjectId(
+		"4d85c7039ab0fd70a117d730"),
+		name: 'Leto'})
 
 Now let's add a couple employees and set their manager as `Leto`:
 
-	db.employees.insert({_id: ObjectId("4d85c7039ab0fd70a117d731"), name: 'Duncan', manager: ObjectId("4d85c7039ab0fd70a117d730")});
-	db.employees.insert({_id: ObjectId("4d85c7039ab0fd70a117d732"), name: 'Moneo', manager: ObjectId("4d85c7039ab0fd70a117d730")});
+	db.employees.insert({_id: ObjectId(
+		"4d85c7039ab0fd70a117d731"),
+		name: 'Duncan',
+		manager: ObjectId(
+		"4d85c7039ab0fd70a117d730")});
+	db.employees.insert({_id: ObjectId(
+		"4d85c7039ab0fd70a117d732"),
+		name: 'Moneo',
+		manager: ObjectId(
+		"4d85c7039ab0fd70a117d730")});
 
 
 (It's worth repeating that the `_id` can be any unique value. Since you'd likely use an `ObjectId` in real life, we'll use them here as well.)
 
 Of course, to find all of Leto's employees, one simply executes:
 
-	db.employees.find({manager: ObjectId("4d85c7039ab0fd70a117d730")})
+	db.employees.find({manager: ObjectId(
+		"4d85c7039ab0fd70a117d730")})
 
 There's nothing magical here. In the worst cases, most of the time, the lack of join will merely require an extra query (likely indexed).
 
 ## Arrays and Embedded Documents ##
 Just because MongoDB doesn't have joins doesn't mean it doesn't have a few tricks up its sleeve. Remember when we quickly saw that MongoDB supports arrays as first class objects of a document? It turns out that this is incredibly handy when dealing with many-to-one or many-to-many relationships. As a simple example, if an employee could have two managers, we could simply store these in an array:
 
-	db.employees.insert({_id: ObjectId("4d85c7039ab0fd70a117d733"), name: 'Siona', manager: [ObjectId("4d85c7039ab0fd70a117d730"), ObjectId("4d85c7039ab0fd70a117d732")] })
+	db.employees.insert({_id: ObjectId(
+		"4d85c7039ab0fd70a117d733"),
+		name: 'Siona',
+		manager: [ObjectId(
+		"4d85c7039ab0fd70a117d730"),
+		ObjectId(
+		"4d85c7039ab0fd70a117d732")] })
 
 Of particular interest is that, for some documents, `manager` can be a scalar value, while for others it can be an array. Our original `find` query will work for both:
 
-	db.employees.find({manager: ObjectId("4d85c7039ab0fd70a117d730")})
+	db.employees.find({manager: ObjectId(
+		"4d85c7039ab0fd70a117d730")})
 
 You'll quickly find that arrays of values are much more convenient to deal with than many-to-many join-tables.
 
 Besides arrays, MongoDB also supports embedded documents. Go ahead and try inserting a document with a nested document, such as:
 
-	db.employees.insert({_id: ObjectId("4d85c7039ab0fd70a117d734"), name: 'Ghanima', family: {mother: 'Chani', father: 'Paul', brother: ObjectId("4d85c7039ab0fd70a117d730")}})
+	db.employees.insert({_id: ObjectId(
+		"4d85c7039ab0fd70a117d734"),
+		name: 'Ghanima',
+		family: {mother: 'Chani',
+			father: 'Paul',
+			brother: ObjectId(
+		"4d85c7039ab0fd70a117d730")}})
 
 In case you are wondering, embedded documents can be queried using a dot-notation:
 
-	db.employees.find({'family.mother': 'Chani'})
+	db.employees.find({
+		'family.mother': 'Chani'})
 
 We'll briefly talk about where embedded documents fit and how you should use them.
 
 ## DBRef ##
-MongoDB supports something known as `DBRef` which is a convention many drivers support. When a driver encounters a `DBRef` it can automatically pull the referenced document. A `DBRef` includes the collection and id of the referenced document. It generally serves a pretty specific purpose: when documents from the same collection might reference documents from a different collection from each other. That is, the `DBRef` for document1 might point to a document in `managers` whereas the `DBRef` for document2 might point to a document in `employees`.
+MongoDB supports something known as `DBRef` which is a convention many drivers support. When a driver encounters a `DBRef` it can automatically pull the referenced document. A `DBRef` includes the collection and id of the referenced document. It generally serves a pretty specific purpose: when documents from the same collection might reference documents from a different collection from each other. That is, the `DBRef` for `document1` might point to a document in `managers` whereas the `DBRef` for `document2` might point to a document in `employees`.
 
 
 ## Denormalization ##
@@ -340,7 +457,10 @@ Arrays of ids are always a useful strategy when dealing with one-to-many or many
 
 First, you should know that an individual document is currently limited to 16 megabytes in size. Knowing that documents have a size limit, though quite generous, gives you some idea of how they are intended to be used. At this point, it seems like most developers lean heavily on manual references for most of their relationships. Embedded documents are frequently leveraged, but mostly for small pieces of data which we want to always pull with the parent document. A real world example I've used is to store an `accounts` document with each user, something like:
 
-	db.users.insert({name: 'leto', email: 'leto@dune.gov', account: {allowed_gholas: 5, spice_ration: 10}})
+	db.users.insert({name: 'leto',
+		email: 'leto@dune.gov',
+		account: {allowed_gholas: 5,
+		spice_ration: 10}})
 
 That doesn't mean you should underestimate the power of embedded documents or write them off as something of minor utility. Having your data model map directly to your objects makes things a lot simpler and often does remove the need to join. This is especially true when you consider that MongoDB lets you query and index fields of an embedded document.
 
@@ -378,7 +498,8 @@ One area where MongoDB can fit a specialized role is in logging. There are two a
 In addition to these performance factors, log data is one of those data sets which can often take advantage of schema-less collections. Finally, MongoDB has something called a [capped collection](http://www.mongodb.org/display/DOCS/Capped+Collections). So far, all of the implicitly created collections we've created are just normal collections. We can create a capped collection by using the `db.createCollection` command and flagging it as capped:
 
 	//limit our capped collection to 1 megabyte
-	db.createCollection('logs', {capped: true, size: 1048576})
+	db.createCollection('logs', {capped: true,
+		size: 1048576})
 
 When our capped collection reaches its 1MB limit, old documents are automatically purged. A limit on the number of documents, rather than the size, can be set using `max`. Capped collections have some interesting properties. For example, you can update a document but it can't grow in size. Also, the insertion order is preserved, so you don't need to add an extra index to get proper time-based sorting.
 
@@ -468,19 +589,30 @@ The first thing to do is look at the map function. The goal of map is to make it
 
 `this` refers to the current document being inspected. Hopefully what'll help make this clear for you is to see what the output of the mapping step is. Using our above data, the complete output would is below. The values from `emit` are grouped together, as arrays, by key:
 
-	{resource: 'index', year: 2010, month: 0, day: 20} => [{count: 1}, {count: 1}, {count:1}]
-	{resource: 'about', year: 2010, month: 0, day: 20} => [{count: 1}]
-	{resource: 'about', year: 2010, month: 0, day: 21} => [{count: 1}, {count: 1}, {count:1}]
-	{resource: 'index', year: 2010, month: 0, day: 21} => [{count: 1}, {count: 1}]
-	{resource: 'index', year: 2010, month: 0, day: 22} => [{count: 1}]
+	{resource: 'index', year: 2010, month: 0,
+		day: 20} => [{count: 1},
+			{count: 1}, {count:1}]
+	{resource: 'about', year: 2010, month: 0,
+		day: 20} => [{count: 1}]
+	{resource: 'about', year: 2010, month: 0,
+		day: 21} => [{count: 1}, {count: 1},
+			{count:1}]
+	{resource: 'index', year: 2010, month: 0,
+		day: 21} => [{count: 1}, {count: 1}]
+	{resource: 'index', year: 2010, month: 0,
+		day: 22} => [{count: 1}]
 
 Understanding this intermediary step is the key to understanding MapReduce. .NET and Java developers can think of it as being of type `IDictionary<object, IList<object>>` (.NET) or `HashMap<Object, ArrayList>` (Java).
 
 Let's change our map function in some contrived way:
 
 	function() {
-		var key = {resource: this.resource, year: this.date.getFullYear(), month: this.date.getMonth(), day: this.date.getDate()};
-		if (this.resource == 'index' && this.date.getHours() == 4) {
+		var key = {resource: this.resource,
+			year: this.date.getFullYear(),
+			month: this.date.getMonth(),
+			day: this.date.getDate()};
+		if (this.resource == 'index' &&
+			this.date.getHours() == 4) {
 			emit(key, {count: 5});
 		} else {
 			emit(key, {count: 1});
@@ -489,7 +621,9 @@ Let's change our map function in some contrived way:
 
 The first intermediary output would change to:
 
-	{resource: 'index', year: 2010, month: 0, day: 20} => [{count: 5}, {count: 1}, {count:1}]
+	{resource: 'index', year: 2010, month: 0,
+		day: 20} => [{count: 5},
+			{count: 1}, {count:1}]
 
 Notice how each emit generates a new value which is grouped by our key.
 
@@ -505,15 +639,22 @@ The reduce function takes each of these intermediary results and outputs a final
 
 Which would output:
 
-	{resource: 'index', year: 2010, month: 0, day: 20} => {count: 3}
-	{resource: 'about', year: 2010, month: 0, day: 20} => {count: 1}
-	{resource: 'about', year: 2010, month: 0, day: 21} => {count: 3}
-	{resource: 'index', year: 2010, month: 0, day: 21} => {count: 2}
-	{resource: 'index', year: 2010, month: 0, day: 22} => {count: 1}
+	{resource: 'index', year: 2010, month: 0,
+		day: 20} => {count: 3}
+	{resource: 'about', year: 2010, month: 0,
+		day: 20} => {count: 1}
+	{resource: 'about', year: 2010, month: 0,
+		day: 21} => {count: 3}
+	{resource: 'index', year: 2010, month: 0,
+		day: 21} => {count: 2}
+	{resource: 'index', year: 2010, month: 0,
+		day: 22} => {count: 1}
 
 Technically, the output in MongoDB is:
 
-	_id: {resource: 'index', year: 2010, month: 0, day: 20}, value: {count: 3}
+	_id: {resource: 'index', year: 2010,
+		month: 0, day: 20},
+		value: {count: 3}
 
 Hopefully you've noticed that this is the final result we were after.
 
@@ -521,14 +662,18 @@ If you've really been paying attention, you might be asking yourself why we didn
 
 Going back to our example, reduce might be called once with the following input:
 
-	{resource: 'index', year: 2010, month: 0, day: 20} => [{count: 1}, {count: 1}, {count:1}]
+	{resource: 'index', year: 2010, month: 0,
+		day: 20} => [{count: 1},
+		{count: 1}, {count:1}]
 
 or it might be called twice with the output of *step 1* making up part of the input to *step 2*:
 
 	//STEP 1
-	{resource: 'index', year: 2010, month: 0, day: 20} => [{count: 1}, {count: 1}]
+	{resource: 'index', year: 2010, month: 0,
+		day: 20} => [{count: 1}, {count: 1}]
 	//STEP 2
-	{resource: 'index', year: 2010, month: 0, day: 20} => [{count: 2}, {count: 1}]
+	{resource: 'index', year: 2010, month: 0,
+		day: 20} => [{count: 2}, {count: 1}]
 
 Using `sum = values.length` would incorrectly return `{count: 2}` from the second step.
 
@@ -539,21 +684,34 @@ Finally, we aren't going to cover it here but it's common to chain reduce method
 ## Pure Practical ##
 With MongoDB we use the `mapReduce` command on a collection. `mapReduce` takes a map function, a reduce function and an output directive. In our shell we can create and pass a JavaScript function. From most libraries you supply a string of your functions (which is a bit ugly). First though, let's create our simple data set:
 
-	db.hits.insert({resource: 'index', date: new Date(2010, 0, 20, 4, 30)});
-	db.hits.insert({resource: 'index', date: new Date(2010, 0, 20, 5, 30)});
-	db.hits.insert({resource: 'about', date: new Date(2010, 0, 20, 6, 0)});
-	db.hits.insert({resource: 'index', date: new Date(2010, 0, 20, 7, 0)});
-	db.hits.insert({resource: 'about', date: new Date(2010, 0, 21, 8, 0)});
-	db.hits.insert({resource: 'about', date: new Date(2010, 0, 21, 8, 30)});
-	db.hits.insert({resource: 'index', date: new Date(2010, 0, 21, 8, 30)});
-	db.hits.insert({resource: 'about', date: new Date(2010, 0, 21, 9, 0)});
-	db.hits.insert({resource: 'index', date: new Date(2010, 0, 21, 9, 30)});
-	db.hits.insert({resource: 'index', date: new Date(2010, 0, 22, 5, 0)});
+	db.hits.insert({resource: 'index',
+		date: new Date(2010, 0, 20, 4, 30)});
+	db.hits.insert({resource: 'index',
+		date: new Date(2010, 0, 20, 5, 30)});
+	db.hits.insert({resource: 'about',
+		date: new Date(2010, 0, 20, 6, 0)});
+	db.hits.insert({resource: 'index',
+		date: new Date(2010, 0, 20, 7, 0)});
+	db.hits.insert({resource: 'about',
+		date: new Date(2010, 0, 21, 8, 0)});
+	db.hits.insert({resource: 'about',
+		date: new Date(2010, 0, 21, 8, 30)});
+	db.hits.insert({resource: 'index',
+		date: new Date(2010, 0, 21, 8, 30)});
+	db.hits.insert({resource: 'about',
+		date: new Date(2010, 0, 21, 9, 0)});
+	db.hits.insert({resource: 'index',
+		date: new Date(2010, 0, 21, 9, 30)});
+	db.hits.insert({resource: 'index',
+		date: new Date(2010, 0, 22, 5, 0)});
 
 Now we can create our map and reduce functions (the MongoDB shell accepts multi-line statements, you'll see *...* after hitting enter to indicate more text is expected):
 
 	var map = function() {
-		var key = {resource: this.resource, year: this.date.getFullYear(), month: this.date.getMonth(), day: this.date.getDate()};
+		var key = {resource: this.resource,
+			year: this.date.getFullYear(),
+			month: this.date.getMonth(),
+			day: this.date.getDate()};
 		emit(key, {count: 1});
 	};
 
@@ -567,11 +725,13 @@ Now we can create our map and reduce functions (the MongoDB shell accepts multi-
 
 We can pass our `map` and `reduce` functions to the `mapReduce` command by running:
 
-	db.hits.mapReduce(map, reduce, {out: {inline:1}})
+	db.hits.mapReduce(map, reduce,
+		{out: {inline:1}})
 
 If you run the above, you should see the desired output. Setting `out` to `inline` means that the output from `mapReduce` is immediately streamed back to us. This is currently limited for results that are 16 megabytes or less. We could instead specify `{out: 'hit_stats'}` and have the results stored in the `hit_stats` collections:
 
-	db.hits.mapReduce(map, reduce, {out: 'hit_stats'});
+	db.hits.mapReduce(map, reduce,
+		{out: 'hit_stats'});
 	db.hit_stats.find();
 
 When you do this, any existing data in `hit_stats` is lost. If we did `{out: {merge: 'hit_stats'}}` existing keys would be replaced with the new values and new keys would be inserted as new documents. Finally, we can `out` using a `reduce` function to handle more advanced cases (such an doing an upsert).
@@ -596,11 +756,13 @@ And dropped via `dropIndex`:
 
 A unique index can be created by supplying a second parameter and setting `unique` to `true`:
 
-	db.unicorns.ensureIndex({name: 1}, {unique: true});
+	db.unicorns.ensureIndex({name: 1},
+		{unique: true});
 
 Indexes can be created on embedded fields (again, using the dot-notation) and on array fields. We can also create compound indexes:
 
-	db.unicorns.ensureIndex({name: 1, vampires: -1});
+	db.unicorns.ensureIndex({name: 1,
+		vampires: -1});
 
 The order of your index (1 for ascending, -1 for descending) doesn't matter for a single key index, but it can have an impact for compound indexes when you are sorting or using a range condition.
 
@@ -653,7 +815,8 @@ The output tells us what was run and when, how many documents were scanned, and 
 
 You can disable the profiler by calling `setProfileLevel` again but changing the argument to `0`. Another option is to specify `1` which will only profile queries that take more than 100 milliseconds. Or, you can specify the minimum time, in milliseconds, with a second parameter:
 
-	//profile anything that takes more than 1 second
+	//profile anything that takes
+	//more than 1 second
 	db.setProfilingLevel(1, 1000);
 
 ## Backups and Restore ##
@@ -665,7 +828,8 @@ For example, to back up our `learn` database to a `backup` folder, we'd execute 
 
 To restore only the `unicorns` collection, we could then do:
 
-	mongorestore --collection unicorns backup/learn/unicorns.bson
+	mongorestore --collection unicorns \
+		backup/learn/unicorns.bson
 
 It's worth pointing out that `mongoexport` and `mongoimport` are two other executables which can be used to export and import data from JSON or CSV. For example, we can get a JSON output by doing:
 
@@ -673,7 +837,9 @@ It's worth pointing out that `mongoexport` and `mongoimport` are two other execu
 
 And a CSV output by doing:
 
-	mongoexport --db learn -collection unicorns --csv -fields name,weight,vampires
+	mongoexport --db learn \
+		-collection unicorns \
+		--csv -fields name,weight,vampires
 
 Note that `mongoexport` and `mongoimport` cannot always represent your data. Only `mongodump` and `mongorestore` should ever be used for actual backups.
 
