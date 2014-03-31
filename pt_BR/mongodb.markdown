@@ -38,7 +38,7 @@ Os fontesd da última versão deste livro estão disponíveis em:
 ## Introdução ##
  > Não é minha culta dos capítulos serem tão curtos, MongoDB é simplesmente fácil de aprender.
 
-É comumente sito que a tecnologia se move  velocidades absurdas. É fato que existe uma crescente lista de novas tecnologias e técnicas sendo lançadas. Entretanto, eu tenho tido há muito a opinião de que tecnologias fundamentais usadas por programadores se movem a um paço mais lento. Alguém poderia passar anos aprendendo pouco e ainda ser relevante. Mas o que acaba sendo supreendente, na verdade, é a velocidade em que tecnologias consolidadas são substituídas. Meio que de repente, tecnologias estabelecidas à muito tempo podem se encontrar ameaçadas pelas mudanças no foco dos desenvolvedores.
+É comumente dito que a tecnologia se move a velocidades absurdas. É fato que existe uma crescente lista de novas tecnologias e técnicas sendo lançadas. Entretanto, eu tenho tido há muito a opinião de que tecnologias fundamentais usadas por programadores se movem a um paço mais lento. Alguém poderia passar anos aprendendo pouco e ainda ser relevante. Mas o que acaba sendo supreendente, na verdade, é a velocidade em que tecnologias consolidadas são substituídas. Meio que de repente, tecnologias estabelecidas à muito tempo podem se encontrar ameaçadas pelas mudanças no foco dos desenvolvedores.
 
 Nada poderia representar melhor essa mudança repentida que o progresso das tecnologias NoSQL contra as bases de dados relacionais, amplamente estabelecidas. É quase como se num dia a web fosse movida por alguns poucos RDBMS e no dia seguinte, umas cinco soluções NoSQL se estabeleceram como soluções plausíveis.
 
