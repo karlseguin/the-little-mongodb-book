@@ -8,9 +8,10 @@
 ## Sobre este Livro ##
 
 ### Licença ###
-O Pequeno Livro do MongoDB é licenciado soba licença Attribution-NonCommercial 3.0 Unported. **Você não pagou por este livro.**
+O Pequeno Livro do MongoDB (The Little MongoDB Book) é licenciado soba licença Attribution-NonCommercial 3.0 Unported. **Você não pagou por este livro.**
 
-Você basicamente livre para copiar, distribuir, modificar ou exibir este livro. Porém, eu solicito que você sempre atribua este livro para mim, Karl Seguin e não o utilize para fins comerciais.
+
+Você é livre para copiar, distribuir, modificar ou exibir este livro. Porém, eu solicito que você sempre atribua este livro para mim, Karl Seguin e não o utilize para fins comerciais.
 
 Você pode ver o texto completo da licença em:
 
@@ -20,6 +21,9 @@ Você pode ver o texto completo da licença em:
 Karl Seguin é um desenvolvedor com experiência em vários campos e tecnologias. É um expert em .NET e desenvolvedor Ruby. Ele é um semi-ativo contribuidor de projetos de software livre, um escritor técnico e ocasionalmente palestrante. A respeito do MongoDB, ele foi contribuidor da biblioteca C# MongoDB NoRM, escreveu o tutorial interativo [mongly](http://mongly.com) assim como o [Mongo Web Admin](https://github.com/karlseguin/Mongo-Web-Admin). Seu serviço gratuito para desenvolvedores casuais de jogos, [mogade.com](http://mogade.com/), é movido a MongoDB. 
 
 Seu blog pode ser encontrado em <http://openmymind.net>, e seus tweets via [@karlseguin](http://twitter.com/karlseguin)
+
+### Tradução para Português Brasileiro ###
+A tradução foi feita inicialmente por [Daniel Melo](https://github.com/danielmelogpi) depois de ter se beneficiado pelo conhecimento contido na versão em inglês. O tradutor pede contribuições caso erros de gramática sejam encontrados no decorrer dessa versão. Vamos ajudar a comunidade brasileira que tem voltado os olhos para essa ferramenta tão interessante.
 
 ### Agradecimentos ###
 Agradecimento especial a [Perry Neal](http://twitter.com/perryneal) por emprestar-me os olhos, mente e paixão. Você me proveu uma ajuda incomensurável. Obrigado.
@@ -34,22 +38,24 @@ Os fontesd da última versão deste livro estão disponíveis em:
 ## Introdução ##
  > Não é minha culta dos capítulos serem tão curtos, MongoDB é simplesmente fácil de aprender.
 
-It is often said that technology moves at a blazing pace. It's true that there is an ever growing list of new technologies and techniques being released. However, I've long been of the opinion that the fundamental technologies used by programmers move at a rather slow pace. One could spend years   learning little yet remain relevant. What is striking though is the speed at which established technologies get replaced. Seemingly over-night, long established technologies find themselves threatened by shifts in developer focus.
+É comumente sito que a tecnologia se move  velocidades absurdas. É fato que existe uma crescente lista de novas tecnologias e técnicas sendo lançadas. Entretanto, eu tenho tido há muito a opinião de que tecnologias fundamentais usadas por programadores se movem a um paço mais lento. Alguém poderia passar anos aprendendo pouco e ainda ser relevante. Mas o que acaba sendo supreendente, na verdade, é a velocidade em que tecnologias consolidadas são substituídas. Meio que de repente, tecnologias estabelecidas à muito tempo podem se encontrar ameaçadas pelas mudanças no foco dos desenvolvedores.
 
-Nothing could be more representative of this sudden shift than the progress of NoSQL technologies against well-established relational databases. It almost seems like one day the web was being driven by a few RDBMS' and the next, five or so NoSQL solutions had established themselves as worthy solutions.
+Nada poderia representar melhor essa mudança repentida que o progresso das tecnologias NoSQL contra as bases de dados relacionais, amplamente estabelecidas. É quase como se num dia a web fosse movida por alguns poucos RDBMS e no dia seguinte, umas cinco soluções NoSQL se estabeleceram como soluções plausíveis.
 
-Even though these transitions seem to happen overnight, the reality is that they can take years to become accepted practice. The initial enthusiasm is driven by a relatively small set of developers and companies. Solutions are refined, lessons learned and seeing that a new technology is here to stay, others slowly try it for themselves. Again, this is particularly true in the case of NoSQL where many solutions aren't replacements for more traditional storage solutions, but rather address a specific need in addition to what one might get from traditional offerings.
+Apesar de essas transições parecerem ocorrer de um dia para o outro, a realidade é que pode levar anos até que essas práticas se tornem aceitáveis. O entusiasmo inicial é movido por um pequeno conjunto de desenvolvedores e companias. Soluções são refinadas, lições aprendidas e, ao ver que a solução veio pra ficar, outros lentamente a tentam por si mesmos. Novamente, isso é particularmente verdadeiro no caso do NoSQL onde muitas soluções não são substitutas para formas mais tradicionais de armazenamento, mas, na verdade, focam uma necessidade específica em algo além do que se poderia esperar de formas convencionais.
 
-Having said all of that, the first thing we ought to do is explain what is meant by NoSQL. It's a broad term that means different things to different people. Personally, I use it very broadly to mean a system that plays a part in the storage of data. Put another way, NoSQL (again, for me), is the belief that your persistence layer isn't necessarily the responsibility of a single system. Where relational database vendors have historically tried to position their software as a one-size-fits-all solution, NoSQL leans towards smaller units of responsibility where the best tool for a given job can be leveraged. So, your NoSQL stack might still leverage a relational databases, say MySQL, but it'll also contain Redis as a persistence lookup for specific parts of the system as well as Hadoop for your intensive data processing. Put simply, NoSQL is about being open and aware of alternative, existing and additional patterns and tools for managing your data.
+Tendo dito tudo isso, a primeira coisa que podemos fazer é explicar o que significa NoSQL. É um termo amplo que significa coisas diferentes para pessoas diferentes. Pessoalmente, eu o uso de maneira generalizada significando um sistema que tem uma participação no armazenamento de dados. Explicando de outra forma, NoSQL (novamente, como eu vejo), é a crença de que a sua camada de persistência não é necessariamente responsabilidade de um único sistema. Num ambiente em que os fornecedores de bancos de dados relacionais historicamente tantaram colocar seu softwares em uma posição de uma-ferramenta-para-tudo, NoSQL foca na direção de pequenas unidades de responsabilidade onde a melhor ferramenta para uma certa função pode ser melhorada. Logo, o uso de NoSQL pode conseguir melhorar o uso de bancos de dados relacionais, como o MySQL, mas você ainda poderá usar o Redis como uma alternativa para persistência para partes específicas assim como Hadoop para seu processamento de dados intensivo. De maneira simples, NoSQL se trata de se manter aberto e ciente de padrões e ferramentas alternativas, existentes e adicionais para gerenciar seus dados.
 
-You might be wondering where MongoDB fits into all of this. As a document-oriented database, Mongo is a more generalized NoSQL solution. It should be viewed as an alternative to relational databases. Like relational databases, it too can benefit from being paired with some of the more specialized NoSQL solutions. MongoDB has advantages and drawbacks, which we'll cover in later parts of this book. 
+Você deve estar se perguntando onde o MongoDB se encaixa nisso tudo. Como um banco de dados orientado a documentos, Mongo é uma solução NoSQL mais generalizada. Ele deve ser visto como uma tecnolocia alternativa em relação as bases de dados relacionais. Assim como elas, ele também pode representar um benefício ao ser usado com outras soluções NoSQL mais especializadas. MongoDB tem vantagens e desvantagens, que nós cobriremos mais tarde neste livro.
 
-As you may have noticed, we use the terms MongoDB and Mongo interchangeably.
+Assim como você deve ter notado, nos usamos os termos MongoDB e Mongo de maneira equivalente.
 
-## Getting Started ##
-Most of this book will focus on core MongoDB functionality. We'll therefore rely on the MongoDB shell. While the shell is useful to learn as well as being a useful administrative tool, your code will use a MongoDB driver.
 
-This does bring up the first thing you should know about MongoDB: its drivers. MongoDB has a [number of official drivers](http://www.mongodb.org/display/DOCS/Drivers) for various languages. These drivers can be thought of as the various database drivers you are probably already familiar with. On top of these drivers, the development community has built more language/framework-specific libraries. For example, [NoRM](https://github.com/atheken/NoRM) is a C# library which implements LINQ, and [MongoMapper](https://github.com/jnunemaker/mongomapper) is a Ruby library which is ActiveRecord-friendly. Whether you choose to program directly against the core MongoDB drivers or some higher-level library is up to you. I point this out only because many people new to MongoDB are confused as to why there are both official drivers and community libraries - the former generally focuses on core communication/connectivity with MongoDB and the latter with more language and framework specific implementations.
+## Começando ##
+
+A maior parte desse livro focará nas funcionalidades do núcleo do MongoDB. Nós iremos, portanto, fazer uso do shell do MongoDB. Apesar de o shell ser útil para estudar e também como uma ferramenta administrativa, seu software usará um driver para o MongoDB.
+
+Isso nos traz a primeira coisa que você deverá saber sobre o MongoDB: os seus drivers. MongoDB tem [vários drivers oficiais](http://www.mongodb.org/display/DOCS/Drivers) para várias linguagens. Esses drivers podem ser imaginados como os vários drivers de banco de dados com os quais você provavelmente já está familiarizado. Sobre esses drivers, a comunidade construido bibliotecas e frameworks mais específicos para as linguagens. Por exemplo, [NoRM](https://github.com/atheken/NoRM) é uma biblioteca em C# que implementa LINQ e [MongoMapper](https://github.com/jnunemaker/mongomapper) é uma biblioteca para Ruby que interopera com o ActiveRecord. Se você prefere construir sua aplicação sobre os drivers do núcleo do MongoDB ou sobre bibliotecas de de mais alto nível é uma escolha sua. Eu citei esse assunto por que muito novatos com o MongoDB se confundem com a existência de drivers oficiais e bibliotecas desenvolvidas pela comunidade - as primeiras focam em comunicação/conectividade com o MongoDB e as últimas com a linguagem ou implementações específicas dos frameworks.
 
 As you read through this, I encourage you to play with MongoDB to replicate what I demonstrate as well as to explore questions that might come up on your own. It's easy to get up and running with MongoDB, so let's take a few minutes now to set things up. 
 
