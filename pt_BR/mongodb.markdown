@@ -83,42 +83,42 @@ Você pode agora executar `mongo` (sem o *d*) que conectará o shell ao seu serv
 
 ## Capítulo 1 - O básico ##
 
+Nós começamos nossa jornada pelos mecanismos básicos de trabalho com o MongoDB. Obviamente esse é o foco principal para entender o Mongo, mas deve nos ajudar a responder questões de alto nível sobre onde o MongoDB se encaixa.
 
-We begin our journey by getting to know the basic mechanics of working with MongoDB. Obviously this is core to understanding MongoDB, but it should also help us answer higher-level questions about where MongoDB fits.
+Para começar, há seis conceitos simples que nós precisamos entender.
 
-To get started, there are six simple concepts we need to understand.
+1 . MongoDB tem o mesmo conceito de "base de dados" (database) com o qual você provavelmente já é familiar (ou um schema, para os colegas do Oracle). Dentro de uma instância do MongoDB você pode ter zero ou mais bases de dados, cada uma agindo como um espaço para o resto.
 
-1. MongoDB has the same concept of a 'database' with which you are likely already familiar (or a schema for you Oracle folks).  Within a MongoDB instance you can have zero or more databases, each acting as high-level containers for everything else.
+2. Uma base de dados pode ter zero ou mais 'coleções'. A coleção compartilha o suficiente em comum com as `tabelas` tradicionais e você pode pensar nas duas como a mesma coisa.
 
-2. A database can have zero or more 'collections'. A collection shares enough in common with a traditional 'table' that you can safely think of the two as the same thing.
+3. Coleções são feitas de zero ou mais `documentos`. Novamente, um documento pode ser imaginado como uma `linha`
 
-3. Collections are made up of zero or more 'documents'. Again, a document can safely be thought of as a 'row'.
+4. Um documento é feito de um ou mais `campos`, que você pode provavelmente já percebeu que se parecem com as `colunas`.
 
-4. A document is made up of one or more 'fields', which you can probably guess are a lot like 'columns'.
+5. `Indices` no MongoDB funcionam basicamente como seus pares nas bases relacionais.
 
-5. 'Indexes' in MongoDB function much like their RDBMS counterparts.
+6. `Cursores` são diferentes de que os outros 5 conceitos mas são importantes o suficiente, e comumente explorados, que eu acho que eles valem a discussão. A coisa importante a se aprender sobre cursores é que quando você pode dados ao MongoDB, ele retorna um cursor, com o qual você pode realizar operações, como contar ou pular alguns registros, sem necessariamente ter de recuperar os dados.
 
-6. 'Cursors' are different than the other five concepts but they are important enough, and often overlooked, that I think they are worthy of their own discussion.  The important thing to understand about cursors is that when you ask MongoDB for data, it returns a cursor, which we can do things to, such as counting or skipping ahead, without actually pulling down data.
+Para lembrar, MongoDB é feito de `base de dados` que contém `coleções`. Uma `coleção` é feita de `documentos`. Cada `documento` é composto por `campos`. `Coleções` pode ser `indexadas`, o que melhora a performance  da busca e ordenação. Por último, quando temos dados vindos do MongoDB, nos os temos por meio de um `cursor` cuja execução de fato é atrasada até que seja necessária.
 
-To recap, MongoDB is made up of `databases` which contain `collections`. A `collection` is made up of `documents`. Each `document` is made up of `fields`. `Collections` can be `indexed`, which improves lookup and sorting performance. Finally, when we get data from MongoDB we do so through a `cursor` whose actual execution is delayed until necessary.
+Você ja deve estar se questionando, por que usar terminologia nova (coleção vs. tabela, documento vs. linha e campo vs. coluna). É só pra fazer as coisas mais complicadas? A verdade é que apesar de esses conceitos serem similares aos seus pares nas bases relacionais, eles não são idênticos. A diferença mais marcante vêm do fato de bancos relacionais definirem as colunas no nível da tabela, enquanto uma base de dados orientada a documentos os define no nível dos documentos. Isso quer dizer que cada documento, dentro da mesma coleção pode ter seu único conjunto de campos. Assim sendo, coleção é um container burro em comparação com a tabela, enquanto um documento tem bem mais informação que uma linha.
 
-You might be wondering, why use new terminology (collection vs. table, document vs. row and field vs. column). Is it just to make things more complicated? The truth is that while these concepts are similar to their relational database counterparts, they are not identical. The core difference comes from the fact that relational databases define `columns` at the `table` level whereas a document-oriented database defines its `fields` at the `document` level. That is to say that each `document` within a `collection` can have its own unique set of `fields`.  As such, a `collection` is a dumbed down container in comparison to a `table`, while a `document` has a lot more information than a `row`.
+Apesar de isso ser importante de entender, não se preocupe se as coisas não estão claras agora. Não vai levar mais que dois inserts para ver o que isso realmente significa. No final disso tudo, o ponto é que a coleção não restrige o que acontece dentro dela (é sem schema). Campos são ligados a cada documento, individualmente. Os benefícios e problemas disso serão explorados num capítulo futuro.
 
-Although this is important to understand, don't worry if things aren't yet clear. It won't take more than a couple of inserts to see what this truly means. Ultimately, the point is that a collection isn't strict about what goes in it (it's schema-less). Fields are tracked with each individual document. The benefits and drawbacks of this will be explored in a future chapter.
+Vamos por a mão na massa. Se você ainda não tem o mongo rodando, inicie o servidor `mongod` assim como o shell do mongo. O shell executa Javascript. Existem alguns comandos globais que nós podemos executar, como `help` ou `exit`. Comandos executados sobre a base de dados atual são executados sobre o objeto `db`, como `db.help()` ou `db.stats()`. Comandos executados sobre uma coleção específica, operação esta que faremos bastante, são executadas sobre o objeto `db.NOME_DA_COLECAO`, como `db.unicorns.help()` ou `db.unicorns.count()`.
 
-Let's get hands-on. If you don't have it running already, go ahead and start the `mongod` server as well as a mongo shell. The shell runs JavaScript. There are some global commands you can execute, like `help` or `exit`. Commands that you execute against the current database are executed against the `db` object, such as `db.help()` or `db.stats()` . Commands that you execute against a specific collection, which is what we'll be doing a lot of, are executed against the `db.COLLECTION_NAME` object, such as `db.unicorns.help()` or `db.unicorns.count()`.
+Vá em frente e use `db.help()`. Você terá uma lista de comandos que você pode executar no objeto `db`;
 
-Go ahead and enter `db.help()`, you'll get a list of commands that you can execute against the `db` object.
+Uma pequena nota: por isso rodar em um shell Javascript, se você executar o método sem os parênteses `()`, você terá o corpo do método em vez de o executar. Eu só mencionei isso por que da primeira vez que você faz isso e tem uma resposta começando com `function ( .... ) { ...` você não levará um susto. Por exemplo, se você usar `db.help` (sem parênteses), você verá a implementação interna do método `help`.
 
-A small side note. Because this is a JavaScript shell, if you execute a method and omit the parentheses `()`, you'll see the method body rather than executing the method. I only mention it because the first time you do it and get a response that starts with `function (...){` you won't be surprised. For example, if you enter `db.help` (without the parentheses), you'll see the internal implementation of the `help` method.
 
-First we'll use the global `use` method to switch databases, go ahead and enter `use learn`. It doesn't matter that the database doesn't really exist yet. The first collection that we create will also create the actual `learn` database. Now that you are inside a database, you can start issuing database commands, like `db.getCollectionNames()`. If you do so, you should get an empty array (`[ ]`). Since collections are schema-less, we don't explicitly need to create them. We can simply insert a document into a new collection. To do so, use the `insert` command, supplying it with the document to insert:
+Em um primeiro momento, nós usaremos o método `use` para mudar de bases de dados. Vá em frente e execute `use learn`. Não importa que ela ainda não exista. A primeira coleção que nós criaremos também criará a base de dados em si. Agora que estamos dentro da base de dados, você pode começar a executar os comandos, como `db.getCollectionsName()`. Se você fizer isso, você receberá um array fazio (`[ ]`). Uma vez que coleções não possuem schema, nós não precisamos criá-las explicitamente. Nós podemos simplesmente inserir um documento em uma nova coleção. Para isso, use o comando `insert`, dando a ele o documento à inserir: 
 
 	db.unicorns.insert({name: 'Aurora', gender: 'f', weight: 450})
 
-The above line is executing `insert` against the `unicorns` collection, passing it a single argument. Internally MongoDB uses a binary serialized JSON format. Externally, this means that we use JSON a lot, as is the case with our parameters. If we execute `db.getCollectionNames()` now, we'll actually see two collections: `unicorns` and `system.indexes`. `system.indexes` is created once per database and contains the information on our databases index. 
+A linha acima está excutando `insert` sobre a coleção `unicorns`, lhe passando um único argumento. Internamente o MongoDB usa um JSON serializado binariamente. Externamente isso significa que nós usamos bastante JSON, como é o caso dos nossos parâmetros. Se nós executarmos `db.getCollectionsNames()` agora, nós teremos duas coleções: `unicorns` e `system.indexes`. `system.indexes` é criado uma vez para cada base de dados e contém informação sobre os índices delas.
 
-You can now use the `find` command against `unicorns` to return a list of documents:
+Você pode usar o `find` em `ùnicorns` para retornar uma lista de documentos:
 
 	db.unicorns.find()
 
