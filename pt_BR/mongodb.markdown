@@ -122,22 +122,24 @@ Você pode usar o `find` em `ùnicorns` para retornar uma lista de documentos:
 
 	db.unicorns.find()
 
-Notice that, in addition to the data you specified, there's an `_id` field. Every document must have a unique `_id` field. You can either generate one yourself or let MongoDB generate an ObjectId for you. Most of the time you'll probably want to let MongoDB generate it for you. By default, the `_id` field is indexed - which explains why the `system.indexes` collection was created. You can look at `system.indexes`:
+Perceba que, além dos dados que você especificou, existe um campo `_id`. Todo documento deve ter um campo `_id`. Você pode tanto gerar um você mesmo ou deixar o MongoDB gerar um ObjectId para você. Na maior parte do tempo você provavelmente preferirá deixar o MongoDB gerá-los. Por padrão, o campo  `_id` é indexado - o que exploca o por que da coleção `system.indexes` ser criado. Você pode dar uma olhada em `system.indexes`:
 
 	db.system.indexes.find()
 
-What you're seeing is the name of the index, the database and collection it was created against and the fields included in the index.
+O que você está vendo é o nome do índice, a base de dados e a coleção correspondentes e os campos incluídos no índice.
 
-Now, back to our discussion about schema-less collections. Insert a totally different document into `unicorns`, such as:
+Agora, vamos voltar à nossa discussão sobre coleções sem schema. Insira um novo documento totalmente diferente dentro de `unicorns`, como:
 
 	db.unicorns.insert({name: 'Leto', gender: 'm', home: 'Arrakeen', worm: false})
 
-And, again use `find` to list the documents. Once we know a bit more, we'll discuss this interesting behavior of MongoDB, but hopefully you are starting to understand why the more traditional terminology wasn't a good fit.
+Use novamente o `find` para listar os documentos. Assim que virmos um pouco mais, nós discutiremos esse comportamento interessante do MongoDB, mas por agora você já deve estar entendendo o por que da terminologia convencional não ser muito adequada.
 
-### Mastering Selectors ###
-In addition to the six concepts we've explored, there's one practical aspect of MongoDB you need to have a good grasp of before moving to more advanced topics: query selectors. A MongoDB query selector is like the `where` clause of an SQL statement. As such, you use it when finding, counting, updating and removing documents from collections. A selector is a JSON object , the simplest of which is `{}` which matches all documents (`null` works too). If we wanted to find all female unicorns, we could use `{gender:'f'}`.
 
-Before delving too deeply into selectors, let's set up some data to play with. First, remove what we've put so far in the `unicorns` collection via: `db.unicorns.remove()` (since we aren't supplying a selector, it'll remove all documents). Now, issue the following inserts to get some data we can play with (I suggest you copy and paste this):
+### Dominando seletores ###
+
+Complemento os seis conceitos explorados, existe um aspecto prático do MongoDB sobre o qual você deve ter um bom entendimento antes de prosseguirmos para tópicos mais avançados: seletores de query/consulta. Um seletor do MongoDB é como a cláusula `where` de um comando SQL. Sendo assim, você pode usá-lo quando quer encontrar, contar, atualizar e remover documentos de uma coleção. Um seletor é um objeto JSON, sendo o mais simples possível o bom e velho `{}` que bate com todos os elementos (`null` também funciona assim).  Se nós quisessemos encontrar todas as unicórnios fêmeas nós poderíamos usar `{gender: 'f'}`.
+
+Antes de mergular muito fundo nos seletores, vamos adicionar alguns dados para podermos brincar. Primeiramente remova o que nós já adicionamos à coleção `unicorns` usando `db.unicorns.remove()` (uma vez que não estamos fornecendo um seletor, isso removerá todos os documentos). Agora, execute os seguintes inserts para termos alguns dados à mão (sugiro que você copie e cole isso, com algum cuidado com as aspas): 
 
 	db.unicorns.insert({name: 'Horny', dob: new Date(1992,2,13,7,47), loves: ['carrot','papaya'], weight: 600, gender: 'm', vampires: 63});
 	db.unicorns.insert({name: 'Aurora', dob: new Date(1991, 0, 24, 13, 0), loves: ['carrot', 'grape'], weight: 450, gender: 'f', vampires: 43});
@@ -152,34 +154,36 @@ Before delving too deeply into selectors, let's set up some data to play with. F
 	db.unicorns.insert({name: 'Nimue', dob: new Date(1999, 11, 20, 16, 15), loves: ['grape', 'carrot'], weight: 540, gender: 'f'});
 	db.unicorns.insert({name: 'Dunx', dob: new Date(1976, 6, 18, 18, 18), loves: ['grape', 'watermelon'], weight: 704, gender: 'm', vampires: 165});
 
-Now that we have data, we can master selectors. `{field: value}` is used to find any documents where `field` is equal to `value`. `{field1: value1, field2: value2}` is how we do an `and` statement. The special `$lt`, `$lte`, `$gt`, `$gte` and `$ne` are used for less than, less than or equal, greater than, greater than or equal and not equal operations. For example, to get all male unicorns that weigh more than 700 pounds, we could do:
+Agora que nós temos dados, nós podemos dominar os seletores. `{campo: valor}` é o formato usado para encontrar documentos onde `campo` é igual à `valor`. `{campo1: valor1, campo2: valor2}` é a forma como nós fazemos um `and`. Os campos especiais `$lt`, `$lte`, `$gt`, `$gte` e `$ne` são usados para as operações 'menor que', 'menor ou igual à', 'maior que', 'maior ou igual à' e 'diferente'. Por exemplo, para ter todos os unicórnis machos que pesam mais de 700 quilos, nós poderíamos executar:
 
 	db.unicorns.find({gender: 'm', weight: {$gt: 700}})
 	//or (not quite the same thing, but for demonstration purposes)
 	db.unicorns.find({gender: {$ne: 'f'}, weight: {$gte: 701}})
 
-The `$exists` operator is used for matching the presence or absence of a field, for example:
+O operador `$exists` é usado para acertar com a existência ou não do campo, como por exemplo:
 
 	db.unicorns.find({vampires: {$exists: false}})
 
-Should return a single document. If we want to OR rather than AND we use the `$or` operator and assign it to an array of values we want or'd:
+Deverá retornar um único documento, sendo esse aquele que não tempo o campo `vampires`. Se quiséssemos usar OR em vez de um AND, nós usaríamos o operador $or e seu valor seria um arrau dos valores que queremos no OR (OU) lógico.
 
 	db.unicorns.find({gender: 'f', $or: [{loves: 'apple'}, {loves: 'orange'}, {weight: {$lt: 500}}]})
 
-The above will return all female unicorns which either love apples or oranges or weigh less than 500 pounds.
+A consulta acima retornará todas as unicórnios fêmeas que gostam de maçãs (apple) ou laranjas ou pesam manos de 500 quilos.
 
-There's something pretty neat going on in our last example. You might have already noticed, but the `loves` field is an array. MongoDB supports arrays as first class objects. This is an incredibly handy feature. Once you start using it, you wonder how you ever lived without it. What's more interesting is how easy selecting based on an array value is: `{loves: 'watermelon'}` will return any document where `watermelon` is a value of `loves`.
+Existe algo bem interessante acontecendo no último exemplo. Você já deve ter notado, mas o campo `loves` (gosta) é um array. O MongoDB suporta arrays como objetos de primeira classe. Isso é um recurso muito poderoso. Uma vez que que você comece a usá-lo, você se perguntará como chegou a viver sem isso. O que é mais interessante é quão fácil é recuperar registros usando um array como valor: `{loves: 'watermelon'}` vai retornar todos os documentos que tenham `watermelon` (melão) como valor de `loves` (gosta).
 
-There are more available operators than what we've seen so far. The most flexible being `$where` which lets us supply JavaScript to execute on the server. These are all described in the [Advanced Queries](http://www.mongodb.org/display/DOCS/Advanced+Queries#AdvancedQueries) section of the MongoDB website. What we've covered so far though is the basics you'll need to get started. It's also what you'll end up using most of the time.
+Existem mais operadores do que os que nós vimos até agora. O mais flexível deles é o `$where` que nós permite enviar Javascript para execução do lado do servidor. Eles são descritos na seção [Seletores avançados (Advanced Queries)](http://www.mongodb.org/display/DOCS/Advanced+Queries#AdvancedQueries) do site do MongoDB. O que nós vimos até agora é o básico do que vamos precisar pra começar. São também o que você provavelmente vai usar a maior parte do tempo.
 
-We've seen how these selectors can be used with the `find` command. They can also be used with the `remove` command which we've briefly looked at, the `count` command, which we haven't looked at but you can probably figure out, and the `update` command which we'll spend more time with later on.
+Nós vimos como esses seletores podem ser usados com o comando `find`. Eles também podem ser usados com o comando `remove` que nós demos uma olhada, o `count` que nós ainda não vimos mas que você provavelmente vai adivinhar, e o comando `update`, com o qual nós vamos passar um tempo mais à frente.
 
-The `ObjectId` which MongoDB generated for our `_id` field can be selected like so:
+O  `ObjectId` que o MongoDB gera para o nosso campo `_id` pode ser selecionado assim:
 
 	db.unicorns.find({_id: ObjectId("TheObjectId")})
 
-### In This Chapter ###
-We haven't looked at the `update` command yet, or some of the fancier things we can do with `find`. However, we did get MongoDB up and running, looked briefly at the `insert` and `remove` commands (there isn't much more than what we've seen). We also introduced `find` and saw what MongoDB `selectors` were all about. We've had a good start and laid a solid foundation for things to come. Believe it or not, you actually know most of what there is to know about MongoDB - it really is meant to be quick to learn and easy to use. I strongly urge you to play with your local copy before moving on. Insert different documents, possibly in new collections, and get familiar with different selectors. Use `find`, `count` and `remove`. After a few tries on your own, things that might have seemed awkward at first will hopefully fall into place.
+
+### Nesse capítulo ###
+
+Nós ainda não aprendemos sobre o comando `update` ainda ou sobre algumas coisas mais bonitinhas que podemos fazer com o `find`. Entretanto, nós fizemos o MongoDB rodar, vimos superficialmente o `insert` e o `remove` (sobre eles não tem muito mais além do que vimos). Nós também introduzimos o `find` e vimos do que se tratam os seletores do MongoDB. Nós começamos bem e construímos uma fundação sólida para as coisas que estão por vir. Acredite ou não, você já sabe muito do que há pra saber sobre o MongoDB - ele realmente foi feito para ser rápido de usar e simples de aprender. Eu realmente te aconselho a explorar e brincar um pouco com os comandos que vimos até agora antes de prosseguir. Insira mais documentos, talvez em outras coleções, e se acostume mais com os diferentes seletores. Use o `find`, `count` e `remove`. Depois de agumas tentativas as coisas que podem ter parecido estranhas no começo devem se encaixar.
 
 \clearpage
 
