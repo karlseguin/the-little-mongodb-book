@@ -260,20 +260,21 @@ Lembre-se de que nós estamos aprendendo MongoDB do ponto de vista do shell. O d
 
 \clearpage
 
-## Chapter 3 - Mastering Find ##
-Chapter 1 provided a superficial look at the `find` command. There's more to `find` than understanding `selectors` though. We already mentioned that the result from `find` is a `cursor`. We'll now look at exactly what this means in more detail.
+## Capítulo 3 - Dominando o find ##
+O capítulo 1 nós deu uma visão superficial do comando `find`. Existe, entretando, mais do `find` para aprender do que somente os seletores. Nos já mencionamos que o resultado de `find` é um `cursor`. Nós vamos agora explorar exatamente o que isso significa.
 
-### Field Selection ###
-Before we jump into `cursors`, you should know that `find` takes a second optional parameter. This parameter is the list of fields we want to retrieve. For example, we can get all of the unicorns names by executing:
+### Seleção de campos ###
+Antes de entrarmos no assunto dos cursores, você deve saber que `find` leva um segundo parâmetro, que é opcional. Esse parâmetro é a lista de campos que queremos obter. Por exemplo, nós podemos ter todos os nomes dos unicórnios executando:
 
 	db.unicorns.find(null, {name: 1});
 
-By default, the `_id` field is always returned. We can explicitly exclude it by specifying `{name:1, _id: 0}`.
+Por padrão, o campo `id` é sempre retornado. Nós podemos explicitamente excluí-lo especificando `{name:1, _id: 0}`.
 
-Aside from the `_id` field, you cannot mix and match inclusion and exclusion. If you think about it, that actually makes sense. You either want to select or exclude one or more fields explicitly.
+Além do campo `_id`, você não pode misturar e casar inclusão e exclusão. Se você parar pra pensar sobre isso, vai ver que faz sentido. Você ou quer selecionar ou quer excluir um ou mais campos explicitamente.
 
-### Ordering ###
-A few times now I've mentioned that `find` returns a cursor whose execution is delayed until needed. However, what you've no doubt observed from the shell is that `find` executes immediately. This is a behavior of the shell only. We can observe the true behavior of `cursors` by looking at one of the methods we can chain to `find`. The first that we'll look at is `sort`. `sort` works a lot like the field selection from the previous section. We specify the fields we want to sort on, using 1 for ascending and -1 for descending. For example:
+
+### Ordenação ###
+A pouco tempo atrás eu mencionei que `find` retorna um `cursor` cuja execução é atrasada até que seja necessário. Entretando, se tem uma coisa sobre a qual você não deve ter dúvida sobre o shell, é que o `find` executa imediatamente. Esse é um comportamento exclusivo do shell. Nós podemos observar o comportamento verdadeiro dos cursores observando um ou mais métodos que possamos chamar logo após o `find`. O primeiro que analisaremos é o `sort`. `ort` funciona de forma muito selemelhante com a seleção por campos da seção anterior. Nós especificamos que campos nós queremos usar na ordenação (sorting), usando 1 para 'ascendente' e -1 para 'descendente'. Por exemplo:
 
 	//heaviest unicorns first
 	db.unicorns.find().sort({weight: -1})
@@ -281,33 +282,34 @@ A few times now I've mentioned that `find` returns a cursor whose execution is d
 	//by vampire name then vampire kills:
 	db.unicorns.find().sort({name: 1, vampires: -1})
 
-Like with a relational database, MongoDB can use an index for sorting. We'll look at indexes in more detail later on. However, you should know that MongoDB limits the size of your sort without an index. That is, if you try to sort a large result set which can't use an index, you'll get an error. Some people see this as a limitation. In truth, I wish more databases had the capability to refuse to run unoptimized queries. (I won't turn every MongoDB drawback into a positive, but I've seen enough poorly optimized databases that I sincerely wish they had a strict-mode.)
+Assim como em um banco de dados relacional, o MongoDB pode usar um índice para a ordenação. Nós daremos uma olhada nos índices com mais detalhes um pouco mais a frente. Entretanto, você deve saber que o MongoDB limita o tamanho da sua ordenação se não houver um índice. Isso quer dizer que se você tentar ordenar um resultado grande que não pode usar um índice, você receberá um erro. Algumas pessoas vêem isso como uma limitação. Na verdade, eu gostaria que mais base de dados tivesses a capacidade de rejeitar queries não otimizadas. (Eu não vou transformar todos os pontos negativos do MongoDB em um positivo, mas eu já vi bases de dados suficientemente mal otimizadas e sinceramente eu gostaria que elas tivessem um modo strict / strict-mode).
 
-### Paging ###
-Paging results can be accomplished via the `limit` and `skip` cursor methods. To get the second and third heaviest unicorn, we could do:
+### Paginação ###
+Paginação pode ser conseguida usando os métodos `limit` e `skip`. Para ter o segundo unicórnio mais pesado, nós poderíamos usar:
 
 	db.unicorns.find().sort({weight: -1}).limit(2).skip(1)
 
-Using `limit` in conjunction with `sort`, is a good way to avoid running into problems when sorting on non-indexed fields.
+Usar `limit` junto com o `sort` é uma boa forma de evitar incorrer em problemas quando tentar ordenar campos não indexados. 
 
-### Count ###
-The shell makes it possible to execute a `count` directly on a collection, such as:
+### Contando ###
+O shell torna possível executar um `count` diretamente numa coleção, dessa forma:
 
 	db.unicorns.count({vampires: {$gt: 50}})
 
-In reality, `count` is actually a `cursor` method, the shell simply provides a shortcut. Drivers which don't provide such a shortcut need to be executed like this (which will also work in the shell):
+Na verdade, `count` é, na verdade, um método de `cursor`, sendo que o shell simplemente fornece um atalho. Drivers que não possuem tal atalho pprecisa ser executados da seguinte forma (que também funcionará no shell):
 
 	db.unicorns.find({vampires: {$gt: 50}}).count()
 
-### In This Chapter ###
-Using `find` and `cursors` is a straightforward proposition. There are a few additional commands that we'll either cover in later chapters or which only serve edge cases, but, by now, you should be getting pretty comfortable working in the mongo shell and understanding the fundamentals of MongoDB.
+### Nesse capítulo ###
+
+Usar o `find` e os `cursors` é uma proposta interessante. Existem alguns comandos adicionais que nós ou cobriremos nos pŕoximos capítulos ou que servem somente em casos isolados. Por hora, você deve se sentir confortável trabalhando com o mongo no shell e entendendo os fundamentos do MongoDB.
 
 \clearpage
 
-## Chapter 4 - Data Modeling ##
-Let's shift gears and have a more abstract conversation about MongoDB. Explaining a few new terms and some new syntax is a trivial task. Having a conversation about modeling with a new paradigm isn't as easy. The truth is that most of us are still finding out what works and what doesn't when it comes to modeling with these new technologies. It's a conversation we can start having, but ultimately you'll have to practice and learn on real code.
+## Capítulo 4 - Modelagem de dados ##
+Vamos mudar a direção das engrenagens em algo mais abstrato sobre o MongoDB. Explicar alguns termos novos e um pouco de sintax é uma tarefa simples. Conversando sobre modelagem com um paradigma novo não é assim tão simples. A verdade é que a maioria ainda está aprendendo o que funciona e o que não quando falamos de modelagem com essas tecnologias novas. É uma conversa que nós podemos começar a ter, mas que no final das contas você vai ter de praticar e aprender com código real.
 
-Compared to most NoSQL solutions, document-oriented databases are probably the least different, compared to relational databases, when it comes to modeling. The differences which exist are subtle but that doesn't mean they aren't important. 
+Comparadas com a maioria das soluções NoSQL, as bases de dados orientadas a documentos são provavelmente as menos diferentes, comparadas com bases de dados relacionais, quando falamos de modelagem. As diferenças que existem são pequenas mas isso não quer dizer que não sejam importantes.
 
 ### No Joins ###
 The first and most fundamental difference that you'll need to get comfortable with is MongoDB's lack of joins. I don't know the specific reason why some type of join syntax isn't supported in MongoDB, but I do know that joins are generally seen as non-scalable. That is, once you start to horizontally split your data, you end up performing your joins on the client (the application server) anyways. Regardless of the reasons, the fact remains that data *is* relational, and MongoDB doesn't support joins.
