@@ -13,7 +13,7 @@ If you liked this book, maybe you'll also like [The Little Redis Book](http://op
 * [Chinese](https://github.com/justinyhuang/the-little-mongodb-book-cn)
 * [Italian](https://github.com/nicolaiarocci/the-little-mongodb-book/tree/master/it)
 * [Spanish](https://github.com/uokesita/the-little-mongodb-book/tree/master/es)
-* [Brazilian Portuguese](https://github.com/rafaelgou/the-little-mongodb-book/tree/master/pt_BR)
+* [Brazilian Portuguese](https://github.com/danielmelogpi/the-little-mongodb-book/tree/master/pt_BR)
 * Japanese [Version 1](http://www.cuspy.org/diary/2012-04-17) - [Version 2](https://github.com/ma2/the-little-mongodb-book)
 
 ## License ##
