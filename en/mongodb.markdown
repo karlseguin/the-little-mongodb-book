@@ -20,7 +20,7 @@ His blog can be found at <http://openmymind.net>, and he tweets via [@karlseguin
 A special thanks to [Perry Neal](http://twitter.com/perryneal) for lending me his eyes, mind and passion. You provided me with invaluable help. Thank you.
 
 ## Latest Version ##
-The latest source of this book is available at:
+This version was updated for MongoDB 2.6 by Asya Kamsky.  The latest source of this book is available at:
 
 <http://github.com/karlseguin/the-little-mongodb-book>.
 
@@ -565,19 +565,19 @@ In the shell we have the `aggregate` helper and it takes an array of pipeline op
 What are some of the other pipeline operators that we can use?  The most common one to use before (and frequently after) `$group` would be `$match` - this is exactly like the `find` method and it allows us to aggregate only a matching subset of our documents, or to exclude some documents from our result.
 
 	db.unicorns.aggregate([{$match: {weight:{$lt:600}}},
-		{$group: {_id:"$gender",  total:{$sum:1},
-		  avgVamp:{$avg:"$vampires"}}},
+		{$group: {_id:'$gender',  total:{$sum:1},
+		  avgVamp:{$avg:'$vampires'}}},
 		{$sort:{avgVamp:-1}} ])
 		
 Here we introduced another pipeline operator `$sort` which does exactly what you would expect, along with it we also get `$skip` and `$limit`.  We also used a `$group` operator `$avg`.
 
 MongoDB arrays are powerful but they don't stop us from being able to aggregate on values that are stored inside of them.  We do need to be able to "flatten" them to properly count everything:
 
-db.unicorns.aggregate([{$unwind:'$loves'},
-	{$group: {_id:"$loves",  total:{$sum:1},
-		  unicorns:{$addToSet:"$name"}}},
-		{$sort:{total:-1}}, 
-		{$limit:1} ])
+	db.unicorns.aggregate([{$unwind:'$loves'},
+     	{$group: {_id:'$loves',  total:{$sum:1},
+	 	unicorns:{$addToSet:'$name'}}},
+	  	{$sort:{total:-1}}, 
+	  	{$limit:1} ])
 		
 Here we will find out which food item is loved by the most unicorns and we will also get the list of names of all the unicorns that love it.  `$sort` and `$limit` in combination allow you to get answers to "top N" types of questions.
 
