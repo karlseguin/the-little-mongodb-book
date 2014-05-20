@@ -79,9 +79,9 @@ To get started, there are six simple concepts we need to understand.
 
 4. A document is made up of one or more `fields`, which you can probably guess are a lot like `columns`.
 
-5. `Indexes` in MongoDB function much like their RDBMS counterparts.
+5. `Indexes` in MongoDB function mostly like their RDBMS counterparts.
 
-6. `Cursors` are different than the other five concepts but they are important enough, and often overlooked, that I think they are worthy of their own discussion.  The important thing to understand about cursors is that when you ask MongoDB for data, it returns a cursor, which we can do things to, such as counting or skipping ahead, without actually pulling down data.
+6. `Cursors` are different than the other five concepts but they are important enough, and often overlooked, that I think they are worthy of their own discussion.  The important thing to understand about cursors is that when you ask MongoDB for data, it returns a "pointer" to the result set called a cursor, which we can do things to, such as counting or skipping ahead, before actually pulling down data.
 
 To recap, MongoDB is made up of `databases` which contain `collections`. A `collection` is made up of `documents`. Each `document` is made up of `fields`. `Collections` can be `indexed`, which improves lookup and sorting performance. Finally, when we get data from MongoDB we do so through a `cursor` whose actual execution is delayed until necessary.
 
@@ -106,7 +106,7 @@ You can now use the `find` command against `unicorns` to return a list of docume
 
 	db.unicorns.find()
 
-Notice that, in addition to the data you specified, there's an `_id` field. Every document must have a unique `_id` field. You can either generate one yourself or let MongoDB generate an `ObjectId` for you. Most of the time you'll probably want to let MongoDB generate it for you. By default, the `_id` field is indexed - which explains why the `system.indexes` collection was created. You can look at `system.indexes`:
+Notice that, in addition to the data you specified, there's an `_id` field. Every document must have a unique `_id` field. You can either generate one yourself or let MongoDB generate a value for you which has the type `ObjectId`. Most of the time you'll probably want to let MongoDB generate it for you. By default, the `_id` field is indexed - which explains why the `system.indexes` collection was created. You can look at `system.indexes`:
 
 	db.system.indexes.find()
 
@@ -219,7 +219,9 @@ should return a single document. The '$in' operator is used for matching one of 
     db.unicorns.find({
     	loves: {$in:['apple','orange']}})
 
-If we want to OR rather than AND several conditions, we use the `$or` operator and assign it to an array of selectors we want or'd:
+This returns any unicorn who loves 'apple' or 'orange'.
+
+If we want to OR rather than AND several conditions on different fields, we use the `$or` operator and assign to it an array of selectors we want or'd:
 
 	db.unicorns.find({gender: 'f',
 		$or: [{loves: 'apple'},
@@ -245,18 +247,18 @@ We haven't looked at the `update` command yet, or some of the fancier things we 
 In chapter 1 we introduced three of the four CRUD (create, read, update and delete) operations. This chapter is dedicated to the one we skipped over: `update`. `Update` has a few surprising behaviors, which is why we dedicate a chapter to it.
 
 ## Update: Replace Versus $set ##
-In its simplest form, `update` takes 2 arguments: the selector (where) to use and what field to update with. If Roooooodles had gained a bit of weight, you might expect that we should execute:
+In its simplest form, `update` takes 2 arguments: the selector (where) to use and what updates to apply to fields. If Roooooodles had gained a bit of weight, you might expect that we should execute:
 
 	db.unicorns.update({name: 'Roooooodles'},
 		{weight: 590})
 
 (If you've played with your `unicorns` collection and it doesn't have the original data anymore, go ahead and `remove` all documents and re-insert from the code in chapter 1.)
 
-If this was real code, you'd probably update your records by `_id`, but since I don't know what `_id` MongoDB generated for you, we'll stick to `names`. Now, if we look at the updated record:
+Now, if we look at the updated record:
 
 	db.unicorns.find({name: 'Roooooodles'})
 
-You should discover the first surprise of `update`. No document is found because the second parameter we supply is used to **replace** the original. In other words, the `update` found a document by `name` and replaced the entire document with the new document (the 2nd parameter). This is different than how SQL's `update` command works. In some situations, this is ideal and can be leveraged for some truly dynamic updates. However, when you want to change the value of one, or a few fields, you must use MongoDB's `$set` operator. Go ahead and run this update to reset the lost fields:
+You should discover the first surprise of `update`. No document is found because the second parameter we supply didn't have any update operators, and therefore it was used to **replace** the original document. In other words, the `update` found a document by `name` and replaced the entire document with the new document (the 2nd parameter). There is no equivalent functionality to this in SQL's `update` command. In some situations, this is ideal and can be leveraged for some truly dynamic updates. However, when you want to change the value of one, or a few fields, you must use MongoDB's `$set` operator. Go ahead and run this update to reset the lost fields:
 
 	db.unicorns.update({weight: 590}, {$set: {
 		name: 'Roooooodles',
@@ -275,7 +277,7 @@ We get the expected result. Therefore, the correct way to have updated the weigh
 		{$set: {weight: 590}})
 
 ## Update Operators ##
-In addition to `$set`, we can leverage other operators to do some nifty things. All of these update operators work on fields - so your entire document won't be wiped out. For example, the `$inc` operator is used to increment a field by a certain positive or negative amount. For example, if Pilot was incorrectly awarded a couple vampire kills, we could correct the mistake by executing:
+In addition to `$set`, we can leverage other operators to do some nifty things. All update operators work on fields - so your entire document won't be wiped out. For example, the `$inc` operator is used to increment a field by a certain positive or negative amount. For example, if Pilot was incorrectly awarded a couple vampire kills, we could correct the mistake by executing:
 
 	db.unicorns.update({name: 'Pilot'},
 		{$inc: {vampires: -2}})
@@ -285,7 +287,7 @@ If Aurora suddenly developed a sweet tooth, we could add a value to her `loves` 
 	db.unicorns.update({name: 'Aurora'},
 		{$push: {loves: 'sugar'}})
 
-The [Update Operators](http://docs.mongodb.org/manual/reference/operator/update/#update-operators) section of the MongoDB website has more information on the other available update operators.
+The [Update Operators](http://docs.mongodb.org/manual/reference/operator/update/#update-operators) section of the MongoDB manual has more information on the other available update operators.
 
 ## Upserts ##
 One of the more pleasant surprises of using `update` is that it fully supports `upserts`. An `upsert` updates the document if found or inserts it if not. Upserts are handy to have in certain situations and when you run into one, you'll know it. To enable upserting we pass a parameter to update `{upsert:true}`.
@@ -323,7 +325,7 @@ You might expect to find all of your precious unicorns to be vaccinated. To get 
 	db.unicorns.find({vaccinated: true});
 
 ## In This Chapter ##
-This chapter concluded our introduction to the basic CRUD operations available against a collection. We looked at `update` in detail and observed three interesting behaviors. First, if you pass it a document without update operators, MongoDB's `update` will replaces the existing document. Because of this, usually you will use the `$set` operator (or one of other available operators that modify the document). Secondly, `update` supports an intuitive `upsert` option which is particularly useful when you don't know if the document already exists. Finally, by default, `update` updates only the first matching document, so use the `multi` option when you want to update all matching documents.
+This chapter concluded our introduction to the basic CRUD operations available against a collection. We looked at `update` in detail and observed three interesting behaviors. First, if you pass it a document without update operators, MongoDB's `update` will replace the existing document. Because of this, normally you will use the `$set` operator (or one of the many other available operators that modify the document). Secondly, `update` supports an intuitive `upsert` option which is particularly useful when you don't know if the document already exists. Finally, by default, `update` updates only the first matching document, so use the `multi` option when you want to update all matching documents.
 
 # Chapter 3 - Mastering Find #
 Chapter 1 provided a superficial look at the `find` command. There's more to `find` than understanding `selectors` though. We already mentioned that the result from `find` is a `cursor`. We'll now look at exactly what this means in more detail.
@@ -357,7 +359,7 @@ Paging results can be accomplished via the `limit` and `skip` cursor methods. To
 		.limit(2)
 		.skip(1)
 
-Using `limit` in conjunction with `sort`, is a good way to avoid running into problems when sorting on non-indexed fields.
+Using `limit` in conjunction with `sort`, can be a way to avoid running into problems when sorting on non-indexed fields.
 
 ## Count ##
 The shell makes it possible to execute a `count` directly on a collection, such as:
@@ -503,7 +505,7 @@ For me, the real benefit of dynamic schema is the lack of setup and the reduced 
 Think about it from the perspective of a driver developer. You want to save an object? Serialize it to JSON (technically BSON, but close enough) and send it to MongoDB. There is no property mapping or type mapping. This straightforwardness definitely flows to you, the end developer.
 
 ## Writes ##
-One area where MongoDB can fit a specialized role is in logging. There are two aspects of MongoDB which make writes quite fast. First, you can send a write command and have it return immediately without waiting for the write to be acknowledged. Secondly, you can control the write behavior with respect to data durability. These settings, in addition to specifying how many servers should get your data before being considered successful, are configurable per-write, giving you a great level of control over write performance and data durability.
+One area where MongoDB can fit a specialized role is in logging. There are two aspects of MongoDB which make writes quite fast. First, you have an option to send a write command and have it return immediately without waiting for the write to be acknowledged. Secondly, you can control the write behavior with respect to data durability. These settings, in addition to specifying how many servers should get your data before being considered successful, are configurable per-write, giving you a great level of control over write performance and data durability.
 
 In addition to these performance factors, log data is one of those data sets which can often take advantage of schema-less collections. Finally, MongoDB has something called a [capped collection](http://docs.mongodb.org/manual/core/capped-collections/). So far, all of the implicitly created collections we've created are just normal collections. We can create a capped collection by using the `db.createCollection` command and flagging it as capped:
 
@@ -516,7 +518,7 @@ When our capped collection reaches its 1MB limit, old documents are automaticall
 If you want to "expire" your data based on time rather than overall collection size, you can use [TTL Indexes](http://docs.mongodb.org/manual/tutorial/expire-data/) where TTL stands for "time-to-live".
 
 ## Durability ##
-MongoDB has always been intended to be run in a multi-server setup (MongoDB supports replication). Since version 2.0 MongoDB enables journaling by default, which allows fast recover of the server in case of a crash or abrupt power loss.  
+MongoDB has always been intended to be run in a multi-server setup (MongoDB supports replication). Since version 2.0 MongoDB enables journaling by default, which allows fast recovery of the server in case of a crash or abrupt power loss.  
 
 Durability is only mentioned here because a lot has been made around MongoDB's past lack of single-server durability. This'll likely show up in Google searches for some time to come. Information you find about journaling being a missing feature is simply out of date.
 
@@ -526,14 +528,14 @@ True full text search capability is a recent addition to MongoDB.  It was an "ex
 ## Transactions ##
 MongoDB doesn't have transactions. It has two alternatives, one which is great but with limited use, and the other that is cumbersome but flexible.
 
-The first is its many atomic operations. These are great, so long as they actually address your problem. We already saw some of the simpler ones, like `$inc` and `$set`. There are also commands like `findAndModify` which can update or delete a document and return it atomically.
+The first is its many atomic update operations. These are great, so long as they actually address your problem. We already saw some of the simpler ones, like `$inc` and `$set`. There are also commands like `findAndModify` which can update or delete a document and return it atomically.
 
-The second, when atomic operations aren't enough, is to fall back to a two-phase commit. A two-phase commit is to transactions what manual dereferencing is to joins. It's a storage-agnostic solution that you do in code. Two-phase commits are actually quite popular in the relational world as a way to implement transactions across multiple databases. The MongoDB website [has an example](http://www.mongodb.org/display/DOCS/two-phase+commit) illustrating the most common scenario (a transfer of funds). The general idea is that you store the state of the transaction within the actual document being updated and go through the init-pending-commit/rollback steps manually.
+The second, when atomic operations aren't enough, is to fall back to a two-phase commit. A two-phase commit is to transactions what manual dereferencing is to joins. It's a storage-agnostic solution that you do in code. Two-phase commits are actually quite popular in the relational world as a way to implement transactions across multiple databases. The MongoDB website [has an example](http://docs.mongodb.org/manual/tutorial/perform-two-phase-commits/) illustrating the most typical example (a transfer of funds). The general idea is that you store the state of the transaction within the actual document being updated atomically and go through the init-pending-commit/rollback steps manually.
 
-MongoDB's support for nested documents and schema-less design makes two-phase commits slightly less painful, but it still isn't a great process, especially when you are just getting started with it.
+MongoDB's support for nested documents and flexible schema design makes two-phase commits slightly less painful, but it still isn't a great process, especially when you are just getting started with it.
 
 ## Data Processing ##
-Before version 2.2 MongoDB relied on MapReduce for most data processing jobs. As of 2.2 it has added a powerful option called  [aggregation framework or pipeline](http://docs.mongodb.org/manual/core/aggregation-pipeline/), so you'll want to use MapReduce only in the rare cases where you need complex functions for aggregations that are not yet supported in the pipeline. In the next chapter we'll look at Aggregation Pipeline and MapReduce in detail. For now you can think of them as a very powerful and different way to `group by` (which is an understatement).  For parallel processing of very large data, you may need to rely on something else, such as Hadoop. Thankfully, since the two systems really do complement each other, there's a [MongoDB connector for Hadoop](http://docs.mongodb.org/ecosystem/tools/hadoop/).
+Before version 2.2 MongoDB relied on MapReduce for most data processing jobs. As of 2.2 it has added a powerful option called  [aggregation framework or pipeline](http://docs.mongodb.org/manual/core/aggregation-pipeline/), so you'll only need to use MapReduce in rare cases where you need complex functions for aggregations that are not yet supported in the pipeline. In the next chapter we'll look at Aggregation Pipeline and MapReduce in detail. For now you can think of them as a very powerful and different way to `group by` (which is an understatement).  For parallel processing of very large data, you may need to rely on something else, such as Hadoop. Thankfully, since the two systems really do complement each other, there's a [MongoDB connector for Hadoop](http://docs.mongodb.org/ecosystem/tools/hadoop/).
 
 Of course, parallelizing data processing isn't something relational databases excel at either. There are plans for future versions of MongoDB to be better at handling very large sets of data.
 
@@ -551,210 +553,47 @@ The message from this chapter is that MongoDB, in most cases, can replace a rela
 # Chapter 6 - Aggregating Data #
 
 ## Aggregation Pipeline ##
-[ To be completed ]
+Aggregation pipeline gives you a way to transform and combine documents in your collection.  You do it by passing the documents through a pipeline that's somewhat analogous to the Unix "pipe" where you send output from one command to another to a third, etc.
+
+The simplest aggregation you are probably already familiar with is the SQL `group by` expression.  We already saw simple `count()`  method, but what if we want to see how many unicorns are male and how many are female?  
+
+	db.unicorns.aggregate([{$group:{_id:'$gender',
+		total: {$sum:1}}}])
+
+In the shell we have the `aggregate` helper and it takes an array of pipeline operators.  For a simple count grouped by something, we only need one such operator and it's called `$group`.   This is the exact analog of `GROUP BY` in SQL where we create a new document with `_id` field indicating what field we are grouping by (here it's `gender`) and other fields usually getting assigned results of some aggregation, in this case we `$sum` 1 for each document that matches a particular gender.  You probably noticed that the `_id` field was assigned `'$gender'` and not `'gender'` - the `'$'` before a field name indicates that the value of this field from incoming document will be substituted.
+
+What are some of the other pipeline operators that we can use?  The most common one to use before (and frequently after) `$group` would be `$match` - this is exactly like the `find` method and it allows us to aggregate only a matching subset of our documents, or to exclude some documents from our result.
+
+	db.unicorns.aggregate([{$match: {weight:{$lt:600}}},
+		{$group: {_id:"$gender",  total:{$sum:1},
+		  avgVamp:{$avg:"$vampires"}}},
+		{$sort:{avgVamp:-1}} ])
+		
+Here we introduced another pipeline operator `$sort` which does exactly what you would expect, along with it we also get `$skip` and `$limit`.  We also used a `$group` operator `$avg`.
+
+MongoDB arrays are powerful but they don't stop us from being able to aggregate on values that are stored inside of them.  We do need to be able to "flatten" them to properly count everything:
+
+db.unicorns.aggregate([{$unwind:'$loves'},
+	{$group: {_id:"$loves",  total:{$sum:1},
+		  unicorns:{$addToSet:"$name"}}},
+		{$sort:{total:-1}}, 
+		{$limit:1} ])
+		
+Here we will find out which food item is loved by the most unicorns and we will also get the list of names of all the unicorns that love it.  `$sort` and `$limit` in combination allow you to get answers to "top N" types of questions.
+
+There is another powerful pipeline operator called [`$project`](http://docs.mongodb.org/manual/reference/operator/aggregation/project/#pipe._S_project) (analogous to the projection we can specify to `find`) which allows you not just to include only certain fields, but to create or calculate new fields based on values in existing fields.  For example, you can use math operators to add together values of several fields before finding out the average, or you can use string operators to create a new field that's a concatination of some existing fields.
+
+This just barely scratches the surface of what you can do with aggregations.  In 2.6 aggregation got even more powerful as the aggregate command returns either a cursor to the result set (which you already know how to work with from Chapter 1) or it can write your results into a new collection using `$out` pipeline operator.  You can see a lot more examples as well as all of the supported pipeline and expression operators in the [MongoDB manual](http://docs.mongodb.org/manual/core/aggregation-pipeline/). 
 
 ## MapReduce ##
-MapReduce is an approach to data processing which has two significant benefits over more traditional solutions. The first, and main, reason it was developed is performance. In theory, MapReduce can be parallelized, allowing very large sets of data to be processed across many cores/CPUs/machines. This isn't something MongoDB MapReduce is currently able to take advantage of. The second benefit of MapReduce is that you get to write real code to do your processing. Compared to what you'd be able to do with SQL, MapReduce code is infinitely richer and lets you push the envelope further before you need to use a more specialized solution.  With MongoDB the code is written in JavaScript.
+MapReduce is a two-step approach to data processing. First you map, and then you reduce. The mapping step transforms the inputted documents and emits a key=>value pair (the key and/or value can be complex). Then, key/value pairs are grouped by key, such that values for the same key end up in an array. The reduce gets a key and the array of values emitted for that key, and produces the final result.  The map and reduce functions are written in JavaScript.
 
-MapReduce is a pattern that has grown in popularity, and you can make use of it almost anywhere; C#, Ruby, Java, Python and so on all have implementations. I want to warn you that at first this'll seem very different and complicated. Don't get frustrated, take your time and play with it yourself. This is worth understanding whether you are using MongoDB or not.
+With MongoDB we use the `mapReduce` command on a collection. `mapReduce` takes a map function, a reduce function and an output directive. In our shell we can create and pass a JavaScript function. From most libraries you supply a string of your functions (which is a bit ugly). The third parameter takes additional options, for example we could filter, sort and limit the documents that we want analyzed. We can also supply a `finalize` method to be applied to the results after the `reduce` step.
 
-## A Mix of Theory and Practice ##
-MapReduce is a two-step process. First you map, and then you reduce. The mapping step transforms the inputted documents and emits a key=>value pair (the key and/or value can be complex). Then, key/value pairs are grouped by key, such that values for the same key end up in an array. The reduce gets a key and the array of values emitted for that key, and produces the final result. We'll look at each step, and the output of each step.
-
-The example that we'll be using is to generate a report of the number of hits, per day, we get on a resource (say a webpage). This is the *hello world* of MapReduce. For our purposes, we'll rely on a `hits` collection with two fields: `resource` and `date`. Our desired output is a breakdown by `resource`, `year`, `month`, `day` and `count`.
-
-Given the following data in `hits`:
-
-	resource     date
-	index        Jan 20 2010 4:30
-	index        Jan 20 2010 5:30
-	about        Jan 20 2010 6:00
-	index        Jan 20 2010 7:00
-	about        Jan 21 2010 8:00
-	about        Jan 21 2010 8:30
-	index        Jan 21 2010 8:30
-	about        Jan 21 2010 9:00
-	index        Jan 21 2010 9:30
-	index        Jan 22 2010 5:00
-
-We'd expect the following output:
-
-	resource  year   month   day   count
-	index     2010   1       20    3
-	about     2010   1       20    1
-	about     2010   1       21    3
-	index     2010   1       21    2
-	index     2010   1       22    1
-
-The nice thing about this type of approach to analytics is that by storing the output, reports are fast to generate and data growth is controlled (per resource that we track, we'll add at most 1 document per day.)
-
-For the time being, focus on understanding the concept. At the end of this chapter, sample data and code will be given for you to try on your own.
-
-The first thing to do is look at the map function. The goal of map is to make it emit a value which can be reduced. It's possible for map to emit 0 or more times. In our case, it'll always emit once (which is common). Imagine map as looping through each document in hits. For each document we want to emit a key with resource, year, month and day, and a simple value of 1:
-
-	function() {
-		var key = {
-		    resource: this.resource,
-		    year: this.date.getFullYear(),
-		    month: this.date.getMonth(),
-		    day: this.date.getDate()
-		};
-		emit(key, {count: 1});
-	}
-
-`this` refers to the current document being inspected. Hopefully what'll help make this clear for you is to see what the output of the mapping step is. Using our above data, the complete output would is below. The values from `emit` are grouped together, as arrays, by key:
-
-	{resource: 'index', year: 2010, month: 0,
-		day: 20} => [{count: 1},
-			{count: 1}, {count:1}]
-	{resource: 'about', year: 2010, month: 0,
-		day: 20} => [{count: 1}]
-	{resource: 'about', year: 2010, month: 0,
-		day: 21} => [{count: 1}, {count: 1},
-			{count:1}]
-	{resource: 'index', year: 2010, month: 0,
-		day: 21} => [{count: 1}, {count: 1}]
-	{resource: 'index', year: 2010, month: 0,
-		day: 22} => [{count: 1}]
-
-Understanding this intermediary step is the key to understanding MapReduce. .NET and Java developers can think of it as being of type `IDictionary<object, IList<object>>` (.NET) or `HashMap<Object, ArrayList>` (Java).
-
-Let's change our map function in some contrived way:
-
-	function() {
-		var key = {resource: this.resource,
-			year: this.date.getFullYear(),
-			month: this.date.getMonth(),
-			day: this.date.getDate()};
-		if (this.resource == 'index' &&
-			this.date.getHours() == 4) {
-			emit(key, {count: 5});
-		} else {
-			emit(key, {count: 1});
-		}
-	}
-
-The first intermediary output would change to:
-
-	{resource: 'index', year: 2010, month: 0,
-		day: 20} => [{count: 5},
-			{count: 1}, {count:1}]
-
-Notice how each emit generates a new value which is grouped by our key.
-
-The reduce function takes each of these intermediary results and outputs a final result. Here's what ours looks like:
-
-	function(key, values) {
-		var sum = 0;
-		values.forEach(function(value) {
-			sum += value['count'];
-		});
-		return {count: sum};
-	};
-
-Which would output:
-
-	{resource: 'index', year: 2010, month: 0,
-		day: 20} => {count: 3}
-	{resource: 'about', year: 2010, month: 0,
-		day: 20} => {count: 1}
-	{resource: 'about', year: 2010, month: 0,
-		day: 21} => {count: 3}
-	{resource: 'index', year: 2010, month: 0,
-		day: 21} => {count: 2}
-	{resource: 'index', year: 2010, month: 0,
-		day: 22} => {count: 1}
-
-Technically, the output in MongoDB is:
-
-	_id: {resource: 'index', year: 2010,
-		month: 0, day: 20},
-		value: {count: 3}
-
-Hopefully you've noticed that this is the final result we were after.
-
-If you've really been paying attention, you might be asking yourself why we didn't use `sum = values.length`. This would seem like an efficient approach when you are summing an array of 1s. This however, is not guaranteed to work. Reduce can be called multiple times with only a portion of the overall values. The purpose of this is to allow the reduce function to be distributed across threads, processes or even computers. The result of two or more reduce functions are fed back into the same reduce function (many times over, for a large data set).
-
-Going back to our example, reduce might be called once with the following input:
-
-	{resource: 'index', year: 2010, month: 0,
-		day: 20} => [{count: 1},
-		{count: 1}, {count:1}]
-
-or it might be called twice with the output of *step 1* making up part of the input to *step 2*:
-
-	//STEP 1
-	{resource: 'index', year: 2010, month: 0,
-		day: 20} => [{count: 1}, {count: 1}]
-	//STEP 2
-	{resource: 'index', year: 2010, month: 0,
-		day: 20} => [{count: 2}, {count: 1}]
-
-Using `sum = values.length` would incorrectly return `{count: 2}` from the second step.
-
-In general, the structure of reduce's output must be the same as its input, and calling reduce multiple times should produce the same result (known as idempotency).
-
-Finally, we aren't going to cover it here but it's common to chain reduce methods when performing more complex analysis.
-
-## Pure Practical ##
-With MongoDB we use the `mapReduce` command on a collection. `mapReduce` takes a map function, a reduce function and an output directive. In our shell we can create and pass a JavaScript function. From most libraries you supply a string of your functions (which is a bit ugly). First though, let's create our simple data set:
-
-	db.hits.insert({resource: 'index',
-		date: new Date(2010, 0, 20, 4, 30)});
-	db.hits.insert({resource: 'index',
-		date: new Date(2010, 0, 20, 5, 30)});
-	db.hits.insert({resource: 'about',
-		date: new Date(2010, 0, 20, 6, 0)});
-	db.hits.insert({resource: 'index',
-		date: new Date(2010, 0, 20, 7, 0)});
-	db.hits.insert({resource: 'about',
-		date: new Date(2010, 0, 21, 8, 0)});
-	db.hits.insert({resource: 'about',
-		date: new Date(2010, 0, 21, 8, 30)});
-	db.hits.insert({resource: 'index',
-		date: new Date(2010, 0, 21, 8, 30)});
-	db.hits.insert({resource: 'about',
-		date: new Date(2010, 0, 21, 9, 0)});
-	db.hits.insert({resource: 'index',
-		date: new Date(2010, 0, 21, 9, 30)});
-	db.hits.insert({resource: 'index',
-		date: new Date(2010, 0, 22, 5, 0)});
-
-Now we can create our map and reduce functions (the MongoDB shell accepts multi-line statements, you'll see *...* after hitting enter to indicate more text is expected):
-
-	var map = function() {
-		var key = {resource: this.resource,
-			year: this.date.getFullYear(),
-			month: this.date.getMonth(),
-			day: this.date.getDate()};
-		emit(key, {count: 1});
-	};
-
-	var reduce = function(key, values) {
-		var sum = 0;
-		values.forEach(function(value) {
-			sum += value['count'];
-		});
-		return {count: sum};
-	};
-
-We can pass our `map` and `reduce` functions to the `mapReduce` command by running:
-
-	db.hits.mapReduce(map, reduce,
-		{out: {inline:1}})
-
-If you run the above, you should see the desired output. Setting `out` to `inline` means that the output from `mapReduce` is immediately streamed back to us. This is currently limited for results that are 16 megabytes or less. We could instead specify `{out: 'hit_stats'}` and have the results stored in the `hit_stats` collections:
-
-	db.hits.mapReduce(map, reduce,
-		{out: 'hit_stats'});
-	db.hit_stats.find();
-
-When you do this, any existing data in `hit_stats` is lost. If we did `{out: {merge: 'hit_stats'}}` existing keys would be replaced with the new values and new keys would be inserted as new documents. Finally, we can `out` using a `reduce` function to handle more advanced cases (such an doing an upsert).
-
-The third parameter takes additional options, for example we could filter, sort and limit the documents that we want analyzed. We can also supply a `finalize` method to be applied to the results after the `reduce` step.
+You probably won't need to use MapReduce for most of your aggregations, but if you do, you can read more about it in [MongoDB manual](http://docs.mongodb.org/manual/core/map-reduce/).
 
 ## In This Chapter ##
-This is the first chapter where we covered something truly different. If it made you uncomfortable, remember that you can always use MongoDB's other [aggregation capabilities](http://www.mongodb.org/display/DOCS/Aggregation) for simpler scenarios. Ultimately though, MapReduce is one of MongoDB's most compelling features. The key to really understanding how to write your map and reduce functions is to visualize and understand the way your intermediary data will look coming out of `map` and heading into `reduce`.
+In this chapter we covered MongoDB's [aggregation capabilities](http://docs.mongodb.org/manual/aggregation/) for simpler scenarios. Aggregation Pipeline and MapReduce are two of MongoDB's most powerful features. Aggregation Pipeline is relatively simple to write once you understand how it's structured and it's infinitely powerful.  MapReduce is more complicated to understand, but its capabilities can be as boundless as any code you can write in JavaScript.  The key to really understanding how to write your map and reduce functions is to visualize and understand the way your intermediary data will look coming out of `map` and heading into `reduce`.
 
 # Chapter 7 - Performance and Tools #
 In this last chapter, we look at a few performance topics as well as some of the tools available to MongoDB developers. We won't dive deeply into either topic, but we will examine the most important aspects of each.
@@ -806,7 +645,7 @@ While replication can help performance somewhat (by isolating long running queri
 You can obtain statistics on a database by typing `db.stats()`. Most of the information deals with the size of your database. You can also get statistics on a collection, say `unicorns`, by typing `db.unicorns.stats()`. Most of this information relates to the size of your collection and its indexes.
 
 ## Profiler ##
-You can enable the MongoDB profiler by executing:
+You enable the MongoDB profiler by executing:
 
 	db.setProfilingLevel(2);
 
@@ -820,14 +659,14 @@ And then examine the profiler:
 
 The output tells us what was run and when, how many documents were scanned, and how much data was returned.
 
-You can disable the profiler by calling `setProfileLevel` again but changing the argument to `0`. Another option is to specify `1` which will only profile queries that take more than 100 milliseconds. Or, you can specify the minimum time, in milliseconds, with a second parameter:
+You disable the profiler by calling `setProfilingLevel` again but changing the argument to `0`. Another option is to specify `1` which will only profile queries that take more than 100 milliseconds. 100 milliseconds is the default threshold, you can specify a different minimum time, in milliseconds, with a second parameter:
 
 	//profile anything that takes
 	//more than 1 second
 	db.setProfilingLevel(1, 1000);
 
 ## Backups and Restore ##
-Within the MongoDB `bin` folder is a `mongodump` executable. Simply executing `mongodump` will connect to localhost and backup all of your databases to a `dump` subfolder. You can type `mongodump --help` to see additional options. Common options are `--db DBNAME` to back up a specific database and `--collection COLLECTIONNAME` to back up a specific collection. You can then use the `mongorestore` executable, located in the same `bin` folder, to restore a previously made backup. Again, the `--db` and `--collection` can be specified to restore a specific database and/or collection.
+Within the MongoDB `bin` folder is a `mongodump` executable. Simply executing `mongodump` will connect to localhost and backup all of your databases to a `dump` subfolder. You can type `mongodump --help` to see additional options. Common options are `--db DBNAME` to back up a specific database and `--collection COLLECTIONNAME` to back up a specific collection. You can then use the `mongorestore` executable, located in the same `bin` folder, to restore a previously made backup. Again, the `--db` and `--collection` can be specified to restore a specific database and/or collection.  `mongodump` and `mongorestore` operate on BSON, which is MongoDB's native format.
 
 For example, to back up our `learn` database to a `backup` folder, we'd execute (this is its own executable which you run in a command/terminal window, not within the mongo shell itself):
 
@@ -848,12 +687,12 @@ And a CSV output by doing:
 		--collection unicorns \
 		--csv --fields name,weight,vampires
 
-Note that `mongoexport` and `mongoimport` cannot always represent your data. Only `mongodump` and `mongorestore` should ever be used for actual backups.
+Note that `mongoexport` and `mongoimport` cannot always represent your data. Only `mongodump` and `mongorestore` should ever be used for actual backups.  You can read more about [your backup options](http://docs.mongodb.org/manual/core/backups/) in the MongoDB Manual.
 
 ## In This Chapter ##
-In this chapter we looked at various commands, tools and performance details of using MongoDB. We haven't touched on everything, but we've looked at the most common ones. Indexing in MongoDB is similar to indexing with relational databases, as are many of the tools. However, with MongoDB, many of these are to the point and simple to use.
+In this chapter we looked at various commands, tools and performance details of using MongoDB. We haven't touched on everything, but we've looked at some of the common ones. Indexing in MongoDB is similar to indexing with relational databases, as are many of the tools. However, with MongoDB, many of these are to the point and simple to use.
 
 # Conclusion #
-You should have enough information to start using MongoDB in a real project. There's more to MongoDB than what we've covered, but your next priority should be putting together what we've learned, and getting familiar with the driver you'll be using. The [MongoDB website](http://www.mongodb.com/) has a lot of useful information. The official [MongoDB user group](http://groups.google.com/group/mongodb-user) is a great place to ask questions.
+You should have enough information to start using MongoDB in a real project. There's a lot more to MongoDB than what we've covered, but your next priority should be putting together what we've learned, and getting familiar with the driver you'll be using. The [MongoDB website](http://www.mongodb.org/) has a lot of useful information. The official [MongoDB user group](http://groups.google.com/group/mongodb-user) is a great place to ask questions.
 
 NoSQL was born not only out of necessity, but also out of an interest in trying new approaches. It is an acknowledgement that our field is ever-advancing and that if we don't try, and sometimes fail, we can never succeed. This, I think, is a good way to lead our professional lives.
