@@ -7,9 +7,12 @@ The book was written by [Karl Seguin](http://openmymind.net), with [Perry Neal](
 
 If you liked this book, maybe you'll also like [The Little Redis Book](http://openmymind.net/2012/1/23/The-Little-Redis-Book/).
 
+The book was updated for MongoDB 2.6 by [Asya Kamsky](https://twitter.com/asya999)
+
 ## Translations ##
 
 * [Russian](https://github.com/jsmarkus/the-little-mongodb-book/tree/master/ru)
+* [Chinese](https://github.com/geminiyellow/the-little-mongodb-book/tree/master/zh-cn) updated for 2.6
 * [Chinese](https://github.com/justinyhuang/the-little-mongodb-book-cn)
 * [Italian](https://github.com/nicolaiarocci/the-little-mongodb-book/tree/master/it)
 * [Spanish](https://github.com/uokesita/the-little-mongodb-book/tree/master/es)
