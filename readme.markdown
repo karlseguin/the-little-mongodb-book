@@ -14,7 +14,7 @@ The book was updated for MongoDB 2.6 by [Asya Kamsky](https://twitter.com/asya99
 * [Russian](https://github.com/jsmarkus/the-little-mongodb-book/tree/master/ru)
 * [Chinese](https://github.com/geminiyellow/the-little-mongodb-book/tree/master/zh-cn) updated for 2.6
 * [Chinese](https://github.com/justinyhuang/the-little-mongodb-book-cn)
-* [Italian](https://github.com/nicolaiarocci/the-little-mongodb-book/tree/master/it)
+* [Italian](https://github.com/nicolaiarocci/the-little-mongodb-book/tree/master/it) updated for 2.6
 * [Spanish](https://github.com/uokesita/the-little-mongodb-book/tree/master/es)
 * [Brazilian Portuguese](https://github.com/danielmelogpi/the-little-mongodb-book/tree/master/pt_BR)
 * Japanese [Version 1](http://www.cuspy.org/diary/2012-04-17) - [Version 2](https://github.com/ma2/the-little-mongodb-book)
