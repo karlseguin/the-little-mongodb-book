@@ -445,6 +445,7 @@ In case you are wondering, embedded documents can be queried using a dot-notatio
 We'll briefly talk about where embedded documents fit and how you should use them.
 
 Combining the two concepts, we can even embed arrays of documents:
+
 	db.employees.insert({_id: ObjectId(
 		"4d85c7039ab0fd70a117d735"),
 		name: 'Chani',
