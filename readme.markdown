@@ -1,7 +1,7 @@
 ## About ##
 The Little MongoDB Book is a free book introducing MongoDB.
 
-The book was written shortly after the creation of the [MongoDB interactive tutorial](http://openmymind.net/mongly/). As such, the two can be seen as complementary.
+The book was written shortly after the creation of the MongoDB interactive tutorial. As such, the two can be seen as complementary.
 
 The book was written by [Karl Seguin](http://openmymind.net), with [Perry Neal](http://twitter.com/perryneal)'s assistance.
 
