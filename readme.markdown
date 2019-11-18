@@ -20,6 +20,7 @@ The book was updated for MongoDB 2.6 by [Asya Kamsky](https://twitter.com/asya99
 * [Japanese](https://github.com/Makopo/the-little-mongodb-book/wiki) updated for 2.6
 * Japanese [Version 1](http://www.cuspy.org/diary/2012-04-17) - [Version 2](https://github.com/ma2/the-little-mongodb-book)
 * [German](https://github.com/pythononwheels/the-little-mongodb-book/tree/master/de)
+* [Burmese](https://github.com/nainglinaung/the-little-mongodb-book/tree/master/mm)
 
 ## License ##
 The book is freely distributed under the [Attribution-NonCommercial 3.0 Unported license](<http://creativecommons.org/licenses/by-nc/3.0/legalcode>).
